@@ -227,7 +227,7 @@ class RuleBuilder implements \ArrayAccess
     }
 
     /**
-     * @throws \InvalidArgumentException if the name is not a string
+     * @throws InvalidNameException if the name is not a string
      */
     private static function name(mixed $name): string
     {

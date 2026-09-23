@@ -109,7 +109,7 @@ class Context implements \ArrayAccess
      *
      * @return mixed The resolved value of the fact
      *
-     * @throws \InvalidArgumentException if the name is not defined
+     * @throws UndefinedFactException if the name is not defined
      */
     #[\Override]
     public function offsetGet(mixed $name): mixed
@@ -142,8 +142,8 @@ class Context implements \ArrayAccess
      * @param mixed $name  The unique name for the fact
      * @param mixed $value The value or a closure to lazily define the value
      *
-     * @throws \InvalidArgumentException if the name is not a string or an integer
-     * @throws \RuntimeException         if a frozen fact is overridden
+     * @throws InvalidNameException if the name is not a string or an integer
+     * @throws FrozenFactException  if a frozen fact is overridden
      */
     #[\Override]
     public function offsetSet(mixed $name, mixed $value): void
@@ -189,7 +189,7 @@ class Context implements \ArrayAccess
      *
      * @return callable&object The passed callable
      *
-     * @throws \InvalidArgumentException if the callable is not a Closure or invokable object
+     * @throws NotCallableException if the callable is not a Closure or invokable object
      */
     public function share(mixed $callable): object
     {
@@ -211,7 +211,7 @@ class Context implements \ArrayAccess
      *
      * @return callable&object The passed callable
      *
-     * @throws \InvalidArgumentException if the callable is not a Closure or invokable object
+     * @throws NotCallableException if the callable is not a Closure or invokable object
      */
     public function protect(mixed $callable): object
     {
@@ -231,7 +231,7 @@ class Context implements \ArrayAccess
      *
      * @return mixed The value of the fact or the closure defining the fact
      *
-     * @throws \InvalidArgumentException if the name is not defined
+     * @throws UndefinedFactException if the name is not defined
      */
     public function raw(mixed $name): mixed
     {
@@ -271,7 +271,7 @@ class Context implements \ArrayAccess
     /**
      * @return array-key
      *
-     * @throws \InvalidArgumentException if the name is not defined
+     * @throws UndefinedFactException if the name is not defined
      */
     private function definedName(mixed $name): string|int
     {

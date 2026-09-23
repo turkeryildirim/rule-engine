@@ -162,7 +162,7 @@ class Set extends Value implements \Countable
     /**
      * @return list<int|float|string>
      *
-     * @throws \RuntimeException if this Set contains non-numeric members
+     * @throws ArithmeticException if this Set contains non-numeric members
      */
     private function numericMembers(string $operation): array
     {

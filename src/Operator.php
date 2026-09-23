@@ -39,7 +39,7 @@ abstract class Operator
     /**
      * @return list<TOperand>
      *
-     * @throws \LogicException if the operand count does not match the operator's cardinality
+     * @throws OperandCountException if the operand count does not match the operator's cardinality
      */
     public function getOperands(): array
     {
@@ -62,7 +62,7 @@ abstract class Operator
     /**
      * @param TOperand $operand
      *
-     * @throws \LogicException if the operator cannot accept another operand
+     * @throws OperandCountException if the operator cannot accept another operand
      */
     protected function pushOperand(Proposition|VariableOperand $operand): void
     {

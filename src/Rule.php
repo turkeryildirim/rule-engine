@@ -95,6 +95,8 @@ class Rule implements Proposition
      * @param Context $context Context with which to execute this Rule
      *
      * @return bool whether the condition held
+     *
+     * @throws EvaluationException if the condition fails; errors thrown by the action are not wrapped
      */
     public function execute(Context $context): bool
     {

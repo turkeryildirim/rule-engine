@@ -74,12 +74,12 @@ Each operator is one class. `Operator<TOperand>` stores operands and validates t
 ### RuleSet, serialization, explanations
 
 - `RuleSet`: priorities live in the set (`addRule($rule, $priority)`), not on the Rule. `executeRules`/`evaluateRules` take `MatchMode` (All/First/Last) × `RuleOrder` (Insertion/Priority). They iterate in order (reversed for Last) and stop at the first match for First/Last. `usort` is stable, so equal priorities keep insertion order.
-- `RuleSerializer`: versioned JSON/array documents. Node kinds are `op`, `var`, `property`/`of`, `value` and `rule`. Anonymous Variables wrapping an operator (created by the fluent DSL) are exported as that operator. Actions are re-attached on import by rule name. `JSON_PRESERVE_ZERO_FRACTION` keeps floats typed. Errors are `SerializationException` with a node path.
+- `RuleSerializer`: versioned JSON/array documents. Node kinds are `op`, `var`, `property`/`of`, `value` and `rule`. Anonymous Variables wrapping an operator (created by the fluent DSL) are exported as that operator. Actions are re-attached on import by rule name, nested rules included. `JSON_PRESERVE_ZERO_FRACTION` keeps floats typed; invalid UTF-8 is substituted (U+FFFD) rather than throwing, in both the serializer and `Explanation`. Errors are `SerializationException` with a node path.
 - `Explainer` / `Rule::explain()` build an `Explanation` tree using the same path notation. Rule nodes take their result from the condition child: calling `Rule::evaluate()` there would recurse, because `Rule::evaluate()` builds an explanation on failure. On failure, `Rule::evaluate()` throws `EvaluationException`, which carries the rule name, failure path/trail and explanation, with the original error as `getPrevious()`. Nested rule failures are unwrapped so the cause is reported once.
 
 ### Exceptions
 
-All implement `Exception\RuleEngineException` and extend the SPL class that was thrown before they existed (`\RuntimeException`, `\LogicException`, `\InvalidArgumentException`), so old catch blocks keep working. `tests/ExceptionTest.php` checks both types for every throw site.
+All implement `Exception\RuleEngineException` and extend the SPL class that was thrown before they existed (`\RuntimeException`, `\LogicException`, `\InvalidArgumentException`), so old catch blocks keep working. `tests/ExceptionTest.php` checks both types for the core throw sites; `SerializationException` and `EvaluationException` are covered by `RuleSerializerTest` and `ExplanationTest`. `@throws` tags name the specific library exception, not the SPL parent.
 
 ### Context
 

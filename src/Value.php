@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
+use D6N\RuleEngine\Exception\ArithmeticException;
 use D6N\RuleEngine\Exception\DivisionByZeroException;
 use D6N\RuleEngine\Exception\InvalidOperandException;
 use D6N\RuleEngine\Internal\Coerce;
@@ -134,7 +135,7 @@ class Value implements \Stringable
     }
 
     /**
-     * @throws \RuntimeException if either value is not numeric
+     * @throws ArithmeticException if either value is not numeric
      */
     public function add(self $value): int|float
     {
@@ -142,7 +143,8 @@ class Value implements \Stringable
     }
 
     /**
-     * @throws \RuntimeException if either value is not numeric, or the divisor is zero
+     * @throws ArithmeticException     if either value is not numeric
+     * @throws DivisionByZeroException if the divisor is zero
      */
     public function divide(self $value): int|float
     {
@@ -155,7 +157,8 @@ class Value implements \Stringable
     /**
      * Remainder of the division. Integer operands use %, anything else uses fmod().
      *
-     * @throws \RuntimeException if either value is not numeric, or the divisor is zero
+     * @throws ArithmeticException     if either value is not numeric
+     * @throws DivisionByZeroException if the divisor is zero
      */
     public function modulo(self $value): int|float
     {
@@ -170,7 +173,7 @@ class Value implements \Stringable
     }
 
     /**
-     * @throws \RuntimeException if either value is not numeric
+     * @throws ArithmeticException if either value is not numeric
      */
     public function multiply(self $value): int|float
     {
@@ -178,7 +181,7 @@ class Value implements \Stringable
     }
 
     /**
-     * @throws \RuntimeException if either value is not numeric
+     * @throws ArithmeticException if either value is not numeric
      */
     public function subtract(self $value): int|float
     {
@@ -186,7 +189,7 @@ class Value implements \Stringable
     }
 
     /**
-     * @throws \RuntimeException if the value is not numeric
+     * @throws ArithmeticException if the value is not numeric
      */
     public function negate(): int|float
     {
@@ -194,7 +197,7 @@ class Value implements \Stringable
     }
 
     /**
-     * @throws \RuntimeException if the value is not numeric
+     * @throws ArithmeticException if the value is not numeric
      */
     public function ceil(): int|float
     {
@@ -202,7 +205,7 @@ class Value implements \Stringable
     }
 
     /**
-     * @throws \RuntimeException if the value is not numeric
+     * @throws ArithmeticException if the value is not numeric
      */
     public function floor(): int|float
     {
@@ -210,7 +213,8 @@ class Value implements \Stringable
     }
 
     /**
-     * @throws \RuntimeException if either value is not numeric, or zero is raised to a negative power
+     * @throws ArithmeticException     if either value is not numeric
+     * @throws DivisionByZeroException if zero is raised to a negative power
      */
     public function exponentiate(self $value): int|float
     {
@@ -228,7 +232,7 @@ class Value implements \Stringable
      * Starts with comparison. An empty prefix or a null value never matches.
      *
      * @param Value $value       Value object to compare against
-     * @param bool  $insensitive Perform a case-insensitive comparison (default: false)
+     * @param bool  $insensitive Ignore case, using Unicode folding and the Turkish i rule (see Coerce::foldCase())
      *
      * @throws InvalidOperandException if either value is not a string (or null)
      */
@@ -243,7 +247,7 @@ class Value implements \Stringable
      * Ends with comparison. An empty suffix or a null value never matches.
      *
      * @param Value $value       Value object to compare against
-     * @param bool  $insensitive Perform a case-insensitive comparison (default: false)
+     * @param bool  $insensitive Ignore case, using Unicode folding and the Turkish i rule (see Coerce::foldCase())
      *
      * @throws InvalidOperandException if either value is not a string (or null)
      */
@@ -255,7 +259,7 @@ class Value implements \Stringable
     }
 
     /**
-     * @throws \RuntimeException if the divisor is zero
+     * @throws DivisionByZeroException if the divisor is zero
      */
     private static function nonZero(int|float $divisor): int|float
     {

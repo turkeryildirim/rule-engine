@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
+use D6N\RuleEngine\Exception\EvaluationException;
+
 /**
  * A Ruler RuleSet.
  *
@@ -80,6 +82,8 @@ class RuleSet
      * change facts that later Rules read.
      *
      * @return list<Rule> the Rules whose condition held and whose action ran
+     *
+     * @throws EvaluationException if a condition fails
      */
     public function executeRules(Context $context, MatchMode $mode = MatchMode::All, RuleOrder $order = RuleOrder::Insertion): array
     {
@@ -90,6 +94,8 @@ class RuleSet
      * Return the matching Rules without running any action.
      *
      * @return list<Rule>
+     *
+     * @throws EvaluationException if a condition fails
      */
     public function evaluateRules(Context $context, MatchMode $mode = MatchMode::All, RuleOrder $order = RuleOrder::Insertion): array
     {
