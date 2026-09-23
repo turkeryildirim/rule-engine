@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
+use D6N\RuleEngine\Exception\EvaluationException;
+
 /**
  * Rule class.
  *
@@ -59,11 +61,29 @@ class Rule implements Proposition
      * Evaluate the Rule with the given Context.
      *
      * @param Context $context Context with which to evaluate this Rule
+     *
+     * @throws EvaluationException if the condition fails; getPrevious() holds the original error
      */
     #[\Override]
     public function evaluate(Context $context): bool
     {
-        return $this->condition->evaluate($context);
+        try {
+            return $this->condition->evaluate($context);
+        } catch (\Throwable $e) {
+            $cause = $e instanceof EvaluationException ? $e->getPrevious() ?? $e : $e;
+
+            throw new EvaluationException($this->name, $this->explain($context), $cause);
+        }
+    }
+
+    /**
+     * Evaluate every node of the condition and report what each one produced.
+     *
+     * Pass the OperatorRegistry used to build the rule to get the names of custom operators.
+     */
+    public function explain(Context $context, ?OperatorRegistry $operators = null): Explanation
+    {
+        return new Explainer($operators)->explain($this, $context);
     }
 
     /**
