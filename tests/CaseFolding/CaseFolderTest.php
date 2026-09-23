@@ -289,23 +289,16 @@ class CaseFolderTest extends TestCase
     }
 
     /**
-     * Normalization needs ext-intl (or a Normalizer polyfill). Without either the
-     * Unicode rules still apply, only composed and decomposed accents stop matching.
-     * Runs in a PHP process without intl and without vendor/.
+     * Normalization works without ext-intl, through symfony/polyfill-intl-normalizer.
+     * Runs in a PHP process without intl.
      */
-    public function testWorksWithoutIntl(): void
+    public function testNormalizesWithoutIntl(): void
     {
         $code = <<<'PHP'
-            // Only this library: vendor/ may bring a Normalizer polyfill
-            spl_autoload_register(static function (string $class): void {
-                $file = 'src/'.str_replace('\\', '/', substr($class, strlen('D6N\\RuleEngine\\'))).'.php';
-                if (is_file($file)) {
-                    require $file;
-                }
-            });
+            require 'vendor/autoload.php';
             $folder = new D6N\RuleEngine\CaseFolding\Utf8CaseFolder();
             echo json_encode([
-                extension_loaded('intl') || class_exists('Normalizer'),
+                extension_loaded('intl'),
                 $folder->fold('STRASSE') === $folder->fold('Straße'),
                 $folder->fold('café') === $folder->fold("CAFE\u{0301}"),
             ]);
@@ -319,6 +312,6 @@ class CaseFolderTest extends TestCase
         if (0 !== $status || !\is_array($result) || true === $result[0]) {
             self::markTestSkipped('Needs a PHP binary that can run with mbstring and without intl.');
         }
-        self::assertSame([false, true, false], $result);
+        self::assertSame([false, true, true], $result);
     }
 }

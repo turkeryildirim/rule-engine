@@ -39,7 +39,7 @@ $freeShipping->execute($context);  // prints "Free shipping for order 1042"
 composer require turkeryildirim/rule-engine
 ```
 
-Requires PHP 8.5+ with `ext-mbstring`; no other dependencies. `ext-intl` is recommended for Unicode normalization in case-insensitive comparisons. Classes live in the `D6N\RuleEngine\` namespace.
+Requires PHP 8.5+ with `ext-mbstring`. The only package dependency is `symfony/polyfill-intl-normalizer`, which uses `ext-intl` when it is installed (faster) and pure PHP otherwise. Classes live in the `D6N\RuleEngine\` namespace.
 
 ## Core concepts
 
@@ -82,7 +82,7 @@ Everything below is called on a RuleBuilder variable (`$rb['name']`). Arguments 
 
 Integers, floats and `Stringable` objects are treated as strings. A `null` value never contains, starts with, ends with or matches anything, and an empty prefix or suffix never matches. Arrays and other non-string values throw an `InvalidOperandException`, as do an invalid regular expression and a pattern that hits a PCRE limit (such as the backtrack limit).
 
-The case-insensitive operators follow the case rules of the Context's language. Without a language they use language-independent Unicode case folding (`ÇAĞRI` = `çağrı`, `Straße` = `STRASSE`, `AÑO` = `año`). With the recommended `intl` extension, text is also normalized, so an `é` typed as one character matches an `e` followed by a combining accent. Accents are not ignored by default: `côte` ≠ `cote`, `año` ≠ `ano`.
+The case-insensitive operators follow the case rules of the Context's language. Without a language they use language-independent Unicode case folding (`ÇAĞRI` = `çağrı`, `Straße` = `STRASSE`, `AÑO` = `año`). Text is also normalized, so an `é` typed as one character matches an `e` followed by a combining accent. Accents are not ignored by default: `côte` ≠ `cote`, `año` ≠ `ano`.
 
 Some languages need their own rules:
 
@@ -418,4 +418,4 @@ composer cs-fix     # apply the coding standard
 
 ## Credits and license
 
-This project is a rewrite of [Ruler](https://github.com/bobthecow/Ruler) by Justin Hileman and contributors. Released under the MIT license; see [LICENSE](LICENSE).
+Based on [Ruler](https://github.com/bobthecow/Ruler) by Justin Hileman. Released under the MIT license; see [LICENSE](LICENSE).

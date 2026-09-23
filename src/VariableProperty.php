@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the Ruler package, an OpenSky project.
- *
- * (c) 2013 OpenSky Project Inc
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace D6N\RuleEngine;
 
 /**
@@ -20,8 +11,6 @@ namespace D6N\RuleEngine;
  * property, method or offset of another Variable. During evaluation, they are
  * replaced with terminal Values from properties of their parent Variable,
  * either from their default Value, or from the current Context.
- *
- * @author Justin Hileman <justin@justinhileman.info>
  */
 class VariableProperty extends Variable implements PropertyReference
 {

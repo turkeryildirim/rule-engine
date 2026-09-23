@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the Ruler package, an OpenSky project.
- *
- * (c) 2013 OpenSky Project Inc
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace D6N\RuleEngine\RuleBuilder;
 
 use D6N\RuleEngine\Exception\InvalidNameException;
@@ -143,8 +134,6 @@ use D6N\RuleEngine\VariableOperand;
  * @method BetweenDates betweenDates(mixed $start, mixed $end)
  * @method WithinLast   withinLast(mixed $interval)
  * @method OlderThan    olderThan(mixed $interval)
- *
- * @author Justin Hileman <justin@justinhileman.info>
  *
  * @implements \ArrayAccess<string, VariableProperty>
  */

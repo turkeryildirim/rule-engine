@@ -34,14 +34,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Ruler Context test.
- *
- * Derived from Pimple, by Fabien Potencier:
- *
- * https://github.com/fabpot/Pimple
- *
- * @author Igor Wiedler <igor@wiedler.ch>
- * @author Justin Hileman <justin@justinhileman.info>
+ * Context test.
  */
 class ContextTest extends TestCase
 {

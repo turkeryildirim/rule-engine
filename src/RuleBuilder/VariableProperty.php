@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the Ruler package, an OpenSky project.
- *
- * (c) 2013 OpenSky Project Inc
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace D6N\RuleEngine\RuleBuilder;
 
 use D6N\RuleEngine\Context;
@@ -35,8 +26,6 @@ use D6N\RuleEngine\Value;
  * it use a trait like it probably should, because this library targets
  * PHP 5.3+. Instead it uses a highly refined "copy and paste" technique,
  * perfected over years of diligent practice.)
- *
- * @author Justin Hileman <justin@justinhileman.info>
  */
 class VariableProperty extends Variable implements PropertyReference
 {

@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the Ruler package, an OpenSky project.
- *
- * (c) 2011 OpenSky Project Inc
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace D6N\RuleEngine;
 
 use D6N\RuleEngine\Exception\InvalidNameException;
@@ -32,8 +23,6 @@ use D6N\RuleEngine\RuleBuilder\Variable;
  *
  * The RuleBuilder provides a DSL and fluent interface for constructing
  * Rules.
- *
- * @author Justin Hileman <justin@justinhileman.info>
  *
  * @implements \ArrayAccess<string, Variable>
  */

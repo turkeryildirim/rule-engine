@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the Ruler package, an OpenSky project.
- *
- * (c) 2011 OpenSky Project Inc
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace D6N\RuleEngine;
 
 use D6N\RuleEngine\CaseFolding\CaseFolder;
@@ -21,12 +12,10 @@ use D6N\RuleEngine\Exception\InvalidOperandException;
 use D6N\RuleEngine\Internal\Coerce;
 
 /**
- * A Ruler Value.
+ * A Value.
  *
  * A Value represents a comparable terminal value. Variables and Comparison Operators
  * are resolved to Values by applying the current Context and the default Variable value.
- *
- * @author Justin Hileman <justin@justinhileman.info>
  */
 class Value implements \Stringable
 {

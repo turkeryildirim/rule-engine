@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the Ruler package, an OpenSky project.
- *
- * (c) 2011 OpenSky Project Inc
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace D6N\RuleEngine\Operator;
 
 use D6N\RuleEngine\Context;
@@ -19,8 +10,6 @@ use D6N\RuleEngine\VariableOperand;
 
 /**
  * A Floor Math Operator.
- *
- * @author Jordan Raub <jordan@raub.me>
  */
 class Floor extends VariableOperator implements VariableOperand
 {

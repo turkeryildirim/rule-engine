@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the Ruler package, an OpenSky project.
- *
- * (c) 2011 OpenSky Project Inc
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace D6N\RuleEngine;
 
 /**
@@ -19,8 +10,6 @@ namespace D6N\RuleEngine;
  * Variables are placeholders in Propositions and Comparison Operators. During
  * evaluation, they are replaced with terminal Values, either from the Variable
  * default or from the current Context.
- *
- * @author Justin Hileman <justin@justinhileman.info>
  */
 class Variable implements VariableOperand
 {

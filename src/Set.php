@@ -2,21 +2,12 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the Ruler package, an OpenSky project.
- *
- * (c) 2011 OpenSky Project Inc
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace D6N\RuleEngine;
 
 use D6N\RuleEngine\Exception\ArithmeticException;
 
 /**
- * A Ruler Set.
+ * A Set.
  *
  * An immutable collection of unique members, a special case of Value which can
  * be compared by the set operators.
@@ -24,8 +15,6 @@ use D6N\RuleEngine\Exception\ArithmeticException;
  * Membership is type-sensitive: 1, "1", 1.0 and true are four different members.
  * Nested arrays become nested Sets, compared by content regardless of order.
  * Objects are compared by identity.
- *
- * @author Justin Hileman <justin@justinhileman.info>
  */
 class Set extends Value implements \Countable
 {

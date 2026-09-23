@@ -14,12 +14,6 @@
             "name": "Türker YILDIRIM",
             "email": "me@turkeryildirim.com",
             "homepage": "https://turkeryildirim.com/"
-        },
-        {
-            "name": "Justin Hileman",
-            "email": "justin@justinhileman.info",
-            "homepage": "http://justinhileman.com/",
-            "role": "Author of the original Ruler library"
         }
     ],
     "support": {
@@ -27,10 +21,11 @@
     },
     "require": {
         "php": "^8.5",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "symfony/polyfill-intl-normalizer": "^1.42"
     },
     "suggest": {
-        "ext-intl": "Unicode normalization in case-insensitive string comparisons"
+        "ext-intl": "Faster Unicode normalization than the bundled polyfill"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.95",

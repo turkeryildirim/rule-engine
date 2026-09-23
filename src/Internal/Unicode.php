@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace D6N\RuleEngine\Internal;
 
 /**
- * Unicode normalization when the intl extension is available; a no-op otherwise.
+ * Unicode normalization, via ext-intl or symfony/polyfill-intl-normalizer.
  *
  * @internal
  */
@@ -16,7 +16,7 @@ final class Unicode
      */
     public static function compose(string $value): string
     {
-        return self::normalize($value, 'C');
+        return self::normalize($value, \Normalizer::FORM_C);
     }
 
     /**
@@ -24,17 +24,14 @@ final class Unicode
      */
     public static function decompose(string $value): string
     {
-        return self::normalize($value, 'D');
+        return self::normalize($value, \Normalizer::FORM_D);
     }
 
-    /**
-     * @param 'C'|'D' $form
-     */
-    private static function normalize(string $value, string $form): string
+    private static function normalize(string $value, int $form): string
     {
-        // Normalizer comes from ext-intl; invalid UTF-8 makes it return false
-        $normalized = \class_exists(\Normalizer::class) ? \Normalizer::normalize($value, 'C' === $form ? \Normalizer::FORM_C : \Normalizer::FORM_D) : $value;
+        $normalized = \Normalizer::normalize($value, $form);
 
+        // false for invalid UTF-8; the caller folds the value as it is then
         return \is_string($normalized) ? $normalized : $value;
     }
 }

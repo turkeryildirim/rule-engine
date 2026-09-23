@@ -9,7 +9,7 @@ use D6N\RuleEngine\RuleBuilder;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class RulerTest extends TestCase
+class RuleEngineTest extends TestCase
 {
     #[DataProvider('truthTableTwo')]
     public function testDeMorgan(bool $p, bool $q): void
