@@ -166,6 +166,6 @@ class RuleBuilderTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        (new RuleBuilder())[1]; // @phpstan-ignore expr.resultUnused (invalid input on purpose)
+        new RuleBuilder()->offsetGet(1);
     }
 }

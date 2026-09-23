@@ -14,27 +14,16 @@ declare(strict_types=1);
 namespace D6N\RuleEngine\RuleBuilder;
 
 use D6N\RuleEngine\Exception\InvalidNameException;
-use D6N\RuleEngine\Operator\Addition;
-use D6N\RuleEngine\Operator\Ceil;
-use D6N\RuleEngine\Operator\Complement;
+use D6N\RuleEngine\Exception\UnknownOperatorException;
 use D6N\RuleEngine\Operator\ContainsSubset;
-use D6N\RuleEngine\Operator\Division;
 use D6N\RuleEngine\Operator\DoesNotContainSubset;
 use D6N\RuleEngine\Operator\EndsWith;
 use D6N\RuleEngine\Operator\EndsWithInsensitive;
 use D6N\RuleEngine\Operator\EqualTo;
-use D6N\RuleEngine\Operator\Exponentiate;
-use D6N\RuleEngine\Operator\Floor;
 use D6N\RuleEngine\Operator\GreaterThan;
 use D6N\RuleEngine\Operator\GreaterThanOrEqualTo;
-use D6N\RuleEngine\Operator\Intersect;
 use D6N\RuleEngine\Operator\LessThan;
 use D6N\RuleEngine\Operator\LessThanOrEqualTo;
-use D6N\RuleEngine\Operator\Max;
-use D6N\RuleEngine\Operator\Min;
-use D6N\RuleEngine\Operator\Modulo;
-use D6N\RuleEngine\Operator\Multiplication;
-use D6N\RuleEngine\Operator\Negation;
 use D6N\RuleEngine\Operator\NotEqualTo;
 use D6N\RuleEngine\Operator\NotSameAs;
 use D6N\RuleEngine\Operator\SameAs;
@@ -46,24 +35,66 @@ use D6N\RuleEngine\Operator\StringContains;
 use D6N\RuleEngine\Operator\StringContainsInsensitive;
 use D6N\RuleEngine\Operator\StringDoesNotContain;
 use D6N\RuleEngine\Operator\StringDoesNotContainInsensitive;
-use D6N\RuleEngine\Operator\Subtraction;
-use D6N\RuleEngine\Operator\SymmetricDifference;
-use D6N\RuleEngine\Operator\Union;
 use D6N\RuleEngine\Proposition;
 use D6N\RuleEngine\RuleBuilder;
 use D6N\RuleEngine\Variable as BaseVariable;
 use D6N\RuleEngine\VariableOperand;
 
 /**
- * A propositional Variable.
+ * A propositional Variable with a fluent interface.
  *
  * Variables are placeholders in Propositions and Comparison Operators. During
  * evaluation, they are replaced with terminal Values, either from the Variable
  * default or from the current Context.
  *
- * The RuleBuilder Variable extends the base Variable class with a fluent
- * interface for creating VariableProperties, Operators and Rules without all
- * kinds of awkward object instantiation.
+ * Every operator known to the RuleBuilder's OperatorRegistry can be called as
+ * a method; its arguments become the remaining operands. Operators that answer
+ * true or false are returned as-is; operators that produce a value are wrapped
+ * in a new Variable so that calls can be chained.
+ *
+ * Comparison:
+ *
+ * @method EqualTo              equalTo(mixed $value)
+ * @method NotEqualTo           notEqualTo(mixed $value)
+ * @method SameAs               sameAs(mixed $value)
+ * @method NotSameAs            notSameAs(mixed $value)
+ * @method GreaterThan          greaterThan(mixed $value)
+ * @method GreaterThanOrEqualTo greaterThanOrEqualTo(mixed $value)
+ * @method LessThan             lessThan(mixed $value)
+ * @method LessThanOrEqualTo    lessThanOrEqualTo(mixed $value)
+ *
+ * Strings:
+ * @method StringContains                  stringContains(mixed $value)
+ * @method StringDoesNotContain            stringDoesNotContain(mixed $value)
+ * @method StringContainsInsensitive       stringContainsInsensitive(mixed $value)
+ * @method StringDoesNotContainInsensitive stringDoesNotContainInsensitive(mixed $value)
+ * @method StartsWith                      startsWith(mixed $value)
+ * @method StartsWithInsensitive           startsWithInsensitive(mixed $value)
+ * @method EndsWith                        endsWith(mixed $value)
+ * @method EndsWithInsensitive             endsWithInsensitive(mixed $value)
+ *
+ * Math:
+ * @method self add(mixed $value)
+ * @method self subtract(mixed $value)
+ * @method self multiply(mixed $value)
+ * @method self divide(mixed $value)
+ * @method self modulo(mixed $value)
+ * @method self exponentiate(mixed $value)
+ * @method self negate()
+ * @method self ceil()
+ * @method self floor()
+ *
+ * Sets:
+ * @method self                 union(mixed ...$values)
+ * @method self                 intersect(mixed ...$values)
+ * @method self                 complement(mixed ...$values)
+ * @method self                 symmetricDifference(mixed $value)
+ * @method self                 min()
+ * @method self                 max()
+ * @method SetContains          setContains(mixed $value)
+ * @method SetDoesNotContain    setDoesNotContain(mixed $value)
+ * @method ContainsSubset       containsSubset(mixed $value)
+ * @method DoesNotContainSubset doesNotContainSubset(mixed $value)
  *
  * @author Justin Hileman <justin@justinhileman.info>
  *
@@ -77,9 +108,8 @@ class Variable extends BaseVariable implements \ArrayAccess
     /**
      * RuleBuilder Variable constructor.
      *
-     * @param RuleBuilder $ruleBuilder
-     * @param string|null $name        Variable name (default: null)
-     * @param mixed       $value       Default Variable value (default: null)
+     * @param string|null $name  Variable name (default: null)
+     * @param mixed       $value Default Variable value (default: null)
      */
     public function __construct(private readonly RuleBuilder $ruleBuilder, ?string $name = null, mixed $value = null)
     {
@@ -107,8 +137,6 @@ class Variable extends BaseVariable implements \ArrayAccess
     }
 
     /**
-     * Fluent interface method for checking whether a VariableProperty has been defined.
-     *
      * @param mixed $name Property name
      */
     #[\Override]
@@ -118,8 +146,6 @@ class Variable extends BaseVariable implements \ArrayAccess
     }
 
     /**
-     * Fluent interface method for creating or accessing VariableProperties.
-     *
      * @see getProperty
      *
      * @param mixed $name Property name
@@ -131,12 +157,10 @@ class Variable extends BaseVariable implements \ArrayAccess
     }
 
     /**
-     * Fluent interface method for setting default a VariableProperty value.
-     *
-     * @see setValue
+     * Set the default value of a VariableProperty.
      *
      * @param mixed $name  Property name
-     * @param mixed $value The default Variable value
+     * @param mixed $value The default VariableProperty value
      */
     #[\Override]
     public function offsetSet(mixed $name, mixed $value): void
@@ -145,8 +169,6 @@ class Variable extends BaseVariable implements \ArrayAccess
     }
 
     /**
-     * Fluent interface method for removing a VariableProperty reference.
-     *
      * @param mixed $name Property name
      */
     #[\Override]
@@ -158,324 +180,36 @@ class Variable extends BaseVariable implements \ArrayAccess
     }
 
     /**
-     * Fluent interface helper to create a contains comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function stringContains(mixed $variable): StringContains
-    {
-        return new StringContains($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a contains comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function stringDoesNotContain(mixed $variable): StringDoesNotContain
-    {
-        return new StringDoesNotContain($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a insensitive contains comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function stringContainsInsensitive(mixed $variable): StringContainsInsensitive
-    {
-        return new StringContainsInsensitive($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a insensitive does not contain comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function stringDoesNotContainInsensitive(mixed $variable): StringDoesNotContainInsensitive
-    {
-        return new StringDoesNotContainInsensitive($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a GreaterThan comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function greaterThan(mixed $variable): GreaterThan
-    {
-        return new GreaterThan($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a GreaterThanOrEqualTo comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function greaterThanOrEqualTo(mixed $variable): GreaterThanOrEqualTo
-    {
-        return new GreaterThanOrEqualTo($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a LessThan comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function lessThan(mixed $variable): LessThan
-    {
-        return new LessThan($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a LessThanOrEqualTo comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function lessThanOrEqualTo(mixed $variable): LessThanOrEqualTo
-    {
-        return new LessThanOrEqualTo($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a EqualTo comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function equalTo(mixed $variable): EqualTo
-    {
-        return new EqualTo($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a NotEqualTo comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function notEqualTo(mixed $variable): NotEqualTo
-    {
-        return new NotEqualTo($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a SameAs comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function sameAs(mixed $variable): SameAs
-    {
-        return new SameAs($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a NotSameAs comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function notSameAs(mixed $variable): NotSameAs
-    {
-        return new NotSameAs($this, $this->asVariable($variable));
-    }
-
-    public function union(mixed ...$variables): self
-    {
-        return $this->wrap(new Union($this, ...$this->asVariables($variables)));
-    }
-
-    public function intersect(mixed ...$variables): self
-    {
-        return $this->wrap(new Intersect($this, ...$this->asVariables($variables)));
-    }
-
-    public function complement(mixed ...$variables): self
-    {
-        return $this->wrap(new Complement($this, ...$this->asVariables($variables)));
-    }
-
-    public function symmetricDifference(mixed $variable): self
-    {
-        return $this->wrap(new SymmetricDifference($this, $this->asVariable($variable)));
-    }
-
-    public function min(): self
-    {
-        return $this->wrap(new Min($this));
-    }
-
-    public function max(): self
-    {
-        return $this->wrap(new Max($this));
-    }
-
-    public function containsSubset(mixed $variable): ContainsSubset
-    {
-        return new ContainsSubset($this, $this->asVariable($variable));
-    }
-
-    public function doesNotContainSubset(mixed $variable): DoesNotContainSubset
-    {
-        return new DoesNotContainSubset($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a contains comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function setContains(mixed $variable): SetContains
-    {
-        return new SetContains($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a contains comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function setDoesNotContain(mixed $variable): SetDoesNotContain
-    {
-        return new SetDoesNotContain($this, $this->asVariable($variable));
-    }
-
-    public function add(mixed $variable): self
-    {
-        return $this->wrap(new Addition($this, $this->asVariable($variable)));
-    }
-
-    public function divide(mixed $variable): self
-    {
-        return $this->wrap(new Division($this, $this->asVariable($variable)));
-    }
-
-    public function modulo(mixed $variable): self
-    {
-        return $this->wrap(new Modulo($this, $this->asVariable($variable)));
-    }
-
-    public function multiply(mixed $variable): self
-    {
-        return $this->wrap(new Multiplication($this, $this->asVariable($variable)));
-    }
-
-    public function subtract(mixed $variable): self
-    {
-        return $this->wrap(new Subtraction($this, $this->asVariable($variable)));
-    }
-
-    public function negate(): self
-    {
-        return $this->wrap(new Negation($this));
-    }
-
-    public function ceil(): self
-    {
-        return $this->wrap(new Ceil($this));
-    }
-
-    public function floor(): self
-    {
-        return $this->wrap(new Floor($this));
-    }
-
-    public function exponentiate(mixed $variable): self
-    {
-        return $this->wrap(new Exponentiate($this, $this->asVariable($variable)));
-    }
-
-    /**
-     * Private helper to retrieve a Variable instance for the given $variable.
-     *
-     * @param mixed $variable BaseVariable instance or value
-     */
-    private function asVariable(mixed $variable): BaseVariable
-    {
-        return ($variable instanceof BaseVariable) ? $variable : new BaseVariable(null, $variable);
-    }
-
-    /**
-     * Private helper to wrap a VariableOperator in a Variable instance.
-     */
-    /**
-     * @param array<mixed> $variables
-     *
-     * @return list<BaseVariable>
-     */
-    private function asVariables(array $variables): array
-    {
-        return \array_values(\array_map($this->asVariable(...), $variables));
-    }
-
-    private function wrap(VariableOperand $op): self
-    {
-        return new self($this->ruleBuilder, null, $op);
-    }
-
-    /**
-     * Fluent interface helper to create a endsWith comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function endsWith(mixed $variable): EndsWith
-    {
-        return new EndsWith($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a endsWith insensitive comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function endsWithInsensitive(mixed $variable): EndsWithInsensitive
-    {
-        return new EndsWithInsensitive($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a startsWith comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function startsWith(mixed $variable): StartsWith
-    {
-        return new StartsWith($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Fluent interface helper to create a startsWith insensitive comparison operator.
-     *
-     * @param mixed $variable Right side of comparison operator
-     */
-    public function startsWithInsensitive(mixed $variable): StartsWithInsensitive
-    {
-        return new StartsWithInsensitive($this, $this->asVariable($variable));
-    }
-
-    /**
-     * Magic method to apply operators registered with RuleBuilder.
+     * Apply a built-in or registered operator, with this Variable as its first operand.
      *
      * @see RuleBuilder::registerOperatorNamespace
      *
-     * @param array<mixed> $args
+     * @param array<mixed> $args the remaining operands; plain values are wrapped in Variables
      *
      * @return Proposition|self the operator, or a Variable wrapping it if it produces a value
      *
-     * @throws \LogicException if operator is not registered
+     * @throws UnknownOperatorException if no operator is registered under the name
      */
     public function __call(string $name, array $args): Proposition|self
     {
         $class = $this->ruleBuilder->findOperator($name);
-        $op = new $class($this, ...$this->asVariables($args));
+        $op = new $class($this, ...\array_values(\array_map($this->asVariable(...), $args)));
 
-        return $op instanceof VariableOperand ? $this->wrap($op) : $op;
+        return $op instanceof VariableOperand ? new self($this->ruleBuilder, null, $op) : $op;
+    }
+
+    private function asVariable(mixed $variable): BaseVariable
+    {
+        return $variable instanceof BaseVariable ? $variable : new BaseVariable(null, $variable);
     }
 
     /**
-     * @throws \InvalidArgumentException if the name is not a string
+     * @throws InvalidNameException if the name is not a string
      */
     private static function name(mixed $name): string
     {
         if (!\is_string($name)) {
-            throw new InvalidNameException(\sprintf('%s names must be strings, %s given.', 'VariableProperty', \get_debug_type($name)));
+            throw new InvalidNameException(\sprintf('VariableProperty names must be strings, %s given.', \get_debug_type($name)));
         }
 
         return $name;

@@ -35,8 +35,12 @@ class RuleBuilder implements \ArrayAccess
 {
     /** @var array<string, Variable> */
     private array $variables = [];
-    /** @var array<string, true> */
-    private array $operatorNamespaces = [];
+    private readonly OperatorRegistry $operators;
+
+    public function __construct(?OperatorRegistry $operators = null)
+    {
+        $this->operators = $operators ?? new OperatorRegistry();
+    }
 
     /**
      * Create a Rule with the given propositional condition.
@@ -57,7 +61,7 @@ class RuleBuilder implements \ArrayAccess
      */
     public function registerOperatorNamespace(string $namespace): self
     {
-        $this->operatorNamespaces[$namespace] = true;
+        $this->operators->registerNamespace($namespace);
 
         return $this;
     }
@@ -152,23 +156,20 @@ class RuleBuilder implements \ArrayAccess
     }
 
     /**
-     * Find an operator in the registered operator namespaces.
+     * Find a built-in or registered operator by name.
      *
      * @return class-string<Proposition|VariableOperand>
      *
-     * @throws \LogicException if a matching operator is not found
+     * @throws UnknownOperatorException if a matching operator is not found
      */
     public function findOperator(string $name): string
     {
-        $operator = \ucfirst($name);
-        foreach (\array_keys($this->operatorNamespaces) as $namespace) {
-            $class = $namespace.'\\'.$operator;
-            if (\is_subclass_of($class, Proposition::class) || \is_subclass_of($class, VariableOperand::class)) {
-                return $class;
-            }
-        }
+        return $this->operators->resolve($name);
+    }
 
-        throw new UnknownOperatorException(\sprintf('Unknown operator: "%s"', $name));
+    public function getOperatorRegistry(): OperatorRegistry
+    {
+        return $this->operators;
     }
 
     /**
