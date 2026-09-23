@@ -28,10 +28,14 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
+use D6N\RuleEngine\CaseFolding\CaseFolder;
+use D6N\RuleEngine\CaseFolding\CaseFolderFactory;
+use D6N\RuleEngine\CaseFolding\Utf8CaseFolder;
 use D6N\RuleEngine\Exception\FrozenFactException;
 use D6N\RuleEngine\Exception\InvalidNameException;
 use D6N\RuleEngine\Exception\NotCallableException;
 use D6N\RuleEngine\Exception\UndefinedFactException;
+use D6N\RuleEngine\Exception\UnsupportedLanguageException;
 
 /**
  * Ruler Context.
@@ -69,6 +73,8 @@ class Context implements \ArrayAccess
 
     private readonly Clock $clock;
 
+    private readonly CaseFolder $caseFolder;
+
     /**
      * Context constructor.
      *
@@ -76,11 +82,21 @@ class Context implements \ArrayAccess
      * values.
      *
      * @param array<array-key, mixed> $values
-     * @param Clock|null              $clock  the source of "now" for relative date operators (default: system time)
+     * @param Clock|null              $clock    the source of "now" for relative date operators (default: system time)
+     * @param string|CaseFolder|null  $language case rules for the case-insensitive string operators: a language
+     *                                          code such as "tr" (see CaseFolderFactory), a CaseFolder, or null
+     *                                          for language-independent Unicode rules
+     *
+     * @throws UnsupportedLanguageException if no case rules are registered for the language code
      */
-    public function __construct(array $values = [], ?Clock $clock = null)
+    public function __construct(array $values = [], ?Clock $clock = null, string|CaseFolder|null $language = null)
     {
         $this->clock = $clock ?? new SystemClock();
+        $this->caseFolder = match (true) {
+            $language instanceof CaseFolder => $language,
+            \is_string($language)           => new CaseFolderFactory()->create($language),
+            default                         => new Utf8CaseFolder(),
+        };
         $this->shared = new \SplObjectStorage();
         $this->protected = new \SplObjectStorage();
 
@@ -246,6 +262,14 @@ class Context implements \ArrayAccess
     public function now(): \DateTimeImmutable
     {
         return $this->clock->now();
+    }
+
+    /**
+     * The case rules used by the case-insensitive string operators.
+     */
+    public function caseFolder(): CaseFolder
+    {
+        return $this->caseFolder;
     }
 
     /**

@@ -36,14 +36,14 @@ Everything evaluates against a `Context` in two roles, split by interface:
 - **`Proposition`** (`evaluate(Context): bool`) — things that are true or false. `Rule` is itself a Proposition (condition + optional action + optional name), so rules nest inside logical operators.
 - **`VariableOperand`** (`prepareValue(Context): Value`) — things that produce a value. `Variable` resolves by name from the Context, falling back to its default value (which may itself be a VariableOperand).
 
-`Value` (immutable, `readonly`) holds the original comparison/arithmetic/string logic and `Set extends Value` holds set logic. Newer operators keep their logic in the operator class. Shared conversions (string, number, list, date, interval, case folding) live in `Internal\Coerce`.
+`Value` (immutable, `readonly`) holds the original comparison/arithmetic/string logic and `Set extends Value` holds set logic. Newer operators keep their logic in the operator class. Shared conversions (string, number, list, date, interval) live in `Internal\Coerce`.
 
 Semantics that are deliberate (chosen by the project owner) and covered by tests:
 - `equalTo` is **strict** (`===`), `sameAs` is **loose** (`==`). This is the reverse of PHPUnit's naming.
 - `Set` membership is **type-sensitive**. Every member gets an identity key from `Set::keyOf()`: `serialize()` for scalars, `spl_object_id` for objects, sorted member keys for nested Sets (so they compare order-independently). All set operations are keyed-array operations on those keys. Never go back to `array_unique`/`array_diff`, which compare by string cast. `in`/`notIn` use the same semantics.
 - `modulo` uses `%` for two ints and `fmod()` otherwise. Any zero divisor throws `DivisionByZeroException`.
 - String operators treat `null` as matching nothing, convert int/float/Stringable, and throw `InvalidOperandException` for anything else.
-- Case-insensitive operators use `Coerce::foldCase()`: Unicode `MB_CASE_FOLD` plus the Turkish rule that İ, I, ı and i are one letter. Plain `mb_*` folding does not match Turkish I/ı (verified); don't "simplify" it away.
+- Case-insensitive operators fold both sides with `$context->caseFolder()`. The default `CaseFolding\Utf8CaseFolder` is `mb_convert_case(MB_CASE_FOLD)` (full folding, so ß = ss). `new Context(language: 'tr')` selects `TurkishCaseFolder` via `CaseFolderFactory`, where I = ı and İ = i but I ≠ i and İ ≠ ı. Each language gets its own `CaseFolder` class plus a `CaseFolderFactory::BUILT_INS` entry; language codes are normalised to their primary subtag (`tr-TR` → `tr`). The language lives on the Context, not in rules or JSON.
 - Relative date operators take "now" from `Context::now()`, which comes from an injectable `Clock` (default `SystemClock`). Tests use `tests/Fixtures/FrozenClock`.
 
 ### Operators (`src/Operator/`) and the registry

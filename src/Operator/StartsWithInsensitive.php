@@ -34,7 +34,7 @@ class StartsWithInsensitive extends VariableOperator implements Proposition
         /** @var VariableOperand $right */
         [$left, $right] = $this->getOperands();
 
-        return $left->prepareValue($context)->startsWith($right->prepareValue($context), true);
+        return $left->prepareValue($context)->startsWith($right->prepareValue($context), $context->caseFolder());
     }
 
     #[\Override]

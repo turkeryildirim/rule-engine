@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine\Test;
 
+use D6N\RuleEngine\CaseFolding\Utf8CaseFolder;
 use D6N\RuleEngine\Value;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -72,8 +73,9 @@ class ValueTest extends TestCase
     {
         $value = new Value('Hello World');
 
-        self::assertTrue($value->startsWith(new Value('hello'), true));
-        self::assertTrue($value->endsWith(new Value('WORLD'), true));
+        self::assertTrue($value->startsWith(new Value('hello'), new Utf8CaseFolder()));
+        self::assertTrue($value->endsWith(new Value('WORLD'), new Utf8CaseFolder()));
+        self::assertTrue($value->stringContainsInsensitive(new Value('O W')));
         self::assertFalse($value->endsWith(new Value('WORLD')));
     }
 

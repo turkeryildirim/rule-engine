@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
+use D6N\RuleEngine\CaseFolding\CaseFolder;
+use D6N\RuleEngine\CaseFolding\Utf8CaseFolder;
 use D6N\RuleEngine\Exception\ArithmeticException;
 use D6N\RuleEngine\Exception\DivisionByZeroException;
 use D6N\RuleEngine\Exception\InvalidOperandException;
@@ -101,15 +103,16 @@ class Value implements \Stringable
     }
 
     /**
-     * Case-insensitive contains comparison (Unicode, see Coerce::foldCase()). A null value contains nothing.
+     * Case-insensitive contains comparison. A null value contains nothing.
      *
-     * @param Value $value Value object to compare against
+     * @param Value      $value      Value object to compare against
+     * @param CaseFolder $caseFolder the language's case rules (default: Unicode)
      *
      * @throws InvalidOperandException if either value is not a string (or null)
      */
-    public function stringContainsInsensitive(self $value): bool
+    public function stringContainsInsensitive(self $value, CaseFolder $caseFolder = new Utf8CaseFolder()): bool
     {
-        [$haystack, $needle] = self::stringOperands($this, $value, true);
+        [$haystack, $needle] = self::stringOperands($this, $value, $caseFolder);
 
         return null !== $haystack && null !== $needle && \str_contains($haystack, $needle);
     }
@@ -231,14 +234,14 @@ class Value implements \Stringable
     /**
      * Starts with comparison. An empty prefix or a null value never matches.
      *
-     * @param Value $value       Value object to compare against
-     * @param bool  $insensitive Ignore case, using Unicode folding and the Turkish i rule (see Coerce::foldCase())
+     * @param Value           $value      Value object to compare against
+     * @param CaseFolder|null $caseFolder ignore case using these rules; null compares exactly
      *
      * @throws InvalidOperandException if either value is not a string (or null)
      */
-    public function startsWith(self $value, bool $insensitive = false): bool
+    public function startsWith(self $value, ?CaseFolder $caseFolder = null): bool
     {
-        [$haystack, $prefix] = self::stringOperands($this, $value, $insensitive);
+        [$haystack, $prefix] = self::stringOperands($this, $value, $caseFolder);
 
         return null !== $haystack && null !== $prefix && '' !== $prefix && \str_starts_with($haystack, $prefix);
     }
@@ -246,14 +249,14 @@ class Value implements \Stringable
     /**
      * Ends with comparison. An empty suffix or a null value never matches.
      *
-     * @param Value $value       Value object to compare against
-     * @param bool  $insensitive Ignore case, using Unicode folding and the Turkish i rule (see Coerce::foldCase())
+     * @param Value           $value      Value object to compare against
+     * @param CaseFolder|null $caseFolder ignore case using these rules; null compares exactly
      *
      * @throws InvalidOperandException if either value is not a string (or null)
      */
-    public function endsWith(self $value, bool $insensitive = false): bool
+    public function endsWith(self $value, ?CaseFolder $caseFolder = null): bool
     {
-        [$haystack, $suffix] = self::stringOperands($this, $value, $insensitive);
+        [$haystack, $suffix] = self::stringOperands($this, $value, $caseFolder);
 
         return null !== $haystack && null !== $suffix && '' !== $suffix && \str_ends_with($haystack, $suffix);
     }
@@ -281,18 +284,18 @@ class Value implements \Stringable
     }
 
     /**
-     * Both values as strings (null stays null), case-folded when $insensitive.
+     * Both values as strings (null stays null), case-folded when a CaseFolder is given.
      *
      * @return array{?string, ?string}
      *
      * @throws InvalidOperandException if either value cannot be used as a string
      */
-    private static function stringOperands(self $left, self $right, bool $insensitive = false): array
+    private static function stringOperands(self $left, self $right, ?CaseFolder $caseFolder = null): array
     {
         $strings = [Coerce::string($left->getValue()), Coerce::string($right->getValue())];
 
-        return $insensitive
-            ? \array_map(static fn (?string $s): ?string => null === $s ? null : Coerce::foldCase($s), $strings)
-            : $strings;
+        return null === $caseFolder
+            ? $strings
+            : \array_map(static fn (?string $s): ?string => null === $s ? null : $caseFolder->fold($s), $strings);
     }
 }

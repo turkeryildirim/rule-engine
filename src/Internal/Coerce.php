@@ -99,13 +99,4 @@ final class Coerce
             throw new InvalidOperandException($e->getMessage(), previous: $e);
         }
     }
-
-    /**
-     * Unicode case folding that also treats the Turkish dotted and dotless
-     * i (İ, I, ı, i) as the same letter.
-     */
-    public static function foldCase(string $value): string
-    {
-        return \str_replace(["i\u{0307}", 'ı'], 'i', \mb_convert_case($value, \MB_CASE_FOLD));
-    }
 }

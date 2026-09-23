@@ -82,7 +82,43 @@ Everything below is called on a RuleBuilder variable (`$rb['name']`). Arguments 
 
 Integers, floats and `Stringable` objects are treated as strings. A `null` value never contains, starts with, ends with or matches anything, and an empty prefix or suffix never matches. Arrays and other non-string values throw an `InvalidOperandException`, as do an invalid regular expression and a pattern that hits a PCRE limit (such as the backtrack limit).
 
-The case-insensitive operators use Unicode case folding (`ÇAĞRI` = `çağrı`, `Straße` = `STRASSE`) and additionally treat the Turkish dotted and dotless i (`İ`, `I`, `ı`, `i`) as the same letter, so `İSTANBUL` = `istanbul`. The price is that words that differ only in that letter (such as *kır* and *kir*) also match each other.
+The case-insensitive operators follow the case rules of the Context's language. Without a language they use language-independent Unicode case folding (`ÇAĞRI` = `çağrı`, `Straße` = `STRASSE`). Some languages need their own rules: in Turkish, dotless `I`/`ı` and dotted `İ`/`i` are different letters, which Unicode defaults get wrong. Set the language to get them:
+
+```php
+$context = new Context(['city' => 'İSTANBUL'], language: 'tr');   // also 'tr-TR', 'tr_TR'
+
+$rb['city']->stringContainsInsensitive('istanbul')->evaluate($context); // true (false without 'tr')
+```
+
+| With `language: 'tr'` | Matches |
+|---|---|
+| `I` | `I`, `ı` |
+| `İ` | `İ`, `i` |
+| `ı` | `ı`, `I` |
+| `i` | `i`, `İ` |
+
+So `KIR` = `kır` and `KİR` = `kir`, while `kır` ≠ `kir`. To add a language, implement `CaseFolding\CaseFolder` in its own class and register it:
+
+```php
+use D6N\RuleEngine\CaseFolding\CaseFolder;
+use D6N\RuleEngine\CaseFolding\CaseFolderFactory;
+
+final class GreekCaseFolder implements CaseFolder
+{
+    public function fold(string $value): string
+    {
+        // e.g. strip accents, then fold
+        return \mb_convert_case($value, \MB_CASE_FOLD);
+    }
+}
+
+$languages = new CaseFolderFactory();
+$languages->register('el', GreekCaseFolder::class);
+
+$context = new Context($facts, language: $languages->create('el')); // or pass `new GreekCaseFolder()` directly
+```
+
+An unknown language code throws `UnsupportedLanguageException`.
 
 ### Math
 
@@ -262,12 +298,13 @@ Every exception implements `D6N\RuleEngine\Exception\RuleEngineException` and al
 | `UndefinedFactException` | `InvalidArgumentException` | reading a fact the Context does not define |
 | `FrozenFactException` | `RuntimeException` | redefining a shared fact after it was resolved |
 | `InvalidNameException`, `NotCallableException` | `InvalidArgumentException` | invalid fact/variable names, `share()`/`protect()` on a non-callable |
+| `UnsupportedLanguageException` | `InvalidArgumentException` | a Context language with no registered case rules |
 | `OperandCountException`, `UnknownOperatorException` | `LogicException` | wrong number of operands, unknown operator |
 | `SerializationException` | `InvalidArgumentException` | JSON export or import problems |
 
 ## The Context
 
-A `Context` is an `ArrayAccess` container of facts. Fact names must be strings or integers.
+A `Context` is an `ArrayAccess` container of facts. Fact names must be strings or integers. Its optional `clock:` and `language:` arguments set "now" for date operators and the case rules for case-insensitive string operators.
 
 ```php
 $context = new Context();

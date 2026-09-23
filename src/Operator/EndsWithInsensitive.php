@@ -34,7 +34,7 @@ class EndsWithInsensitive extends VariableOperator implements Proposition
         /** @var VariableOperand $right */
         [$left, $right] = $this->getOperands();
 
-        return $left->prepareValue($context)->endsWith($right->prepareValue($context), true);
+        return $left->prepareValue($context)->endsWith($right->prepareValue($context), $context->caseFolder());
     }
 
     #[\Override]

@@ -60,12 +60,11 @@ class ValueOperatorsTest extends TestCase
         yield 'endsWithAny' => [static fn (RuleBuilder $rb) => $rb['v']->endsWithAny(['x', 'lo']), 'hello', true];
         yield 'endsWithAny: scalar' => [static fn (RuleBuilder $rb) => $rb['v']->endsWithAny('lo'), 'hello', true];
 
-        // Case-insensitive, Unicode and Turkish dotted/dotless i
-        yield 'insensitive: İstanbul' => [static fn (RuleBuilder $rb) => $rb['v']->stringContainsInsensitive('istanbul'), 'İSTANBUL', true];
+        // Case-insensitive (Unicode defaults; Turkish rules are in CaseFolderTest)
         yield 'insensitive: ÇAĞRI' => [static fn (RuleBuilder $rb) => $rb['v']->startsWithInsensitive('çağ'), 'ÇAĞRI', true];
-        yield 'insensitive: ı/I' => [static fn (RuleBuilder $rb) => $rb['v']->endsWithInsensitive('ı'), 'ÇAĞRI', true];
         yield 'insensitive: ß' => [static fn (RuleBuilder $rb) => $rb['v']->stringContainsInsensitive('STRASSE'), 'Straße', true];
         yield 'insensitive: not found' => [static fn (RuleBuilder $rb) => $rb['v']->stringDoesNotContainInsensitive('Ö'), 'öğrenci', false];
+        yield 'insensitive: no Turkish rules by default' => [static fn (RuleBuilder $rb) => $rb['v']->stringContainsInsensitive('istanbul'), 'İSTANBUL', false];
 
         // Types
         yield 'isNull: null' => [static fn (RuleBuilder $rb) => $rb['v']->isNull(), null, true];
