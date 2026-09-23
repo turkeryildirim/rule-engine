@@ -12,7 +12,8 @@
     "authors": [
         {
             "name": "Türker YILDIRIM",
-            "email": "aslankervan@gmail.com"
+            "email": "me@turkeryildirim.com",
+            "homepage": "https://turkeryildirim.com/"
         },
         {
             "name": "Justin Hileman",
@@ -22,7 +23,6 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/turkeryildirim/rule-engine/issues",
         "source": "https://github.com/turkeryildirim/rule-engine"
     },
     "require": {
