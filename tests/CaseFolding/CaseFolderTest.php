@@ -6,7 +6,9 @@ namespace D6N\RuleEngine\Test\CaseFolding;
 
 use D6N\RuleEngine\CaseFolding\CaseFolder;
 use D6N\RuleEngine\CaseFolding\CaseFolderFactory;
+use D6N\RuleEngine\CaseFolding\FrenchCaseFolder;
 use D6N\RuleEngine\CaseFolding\GreekCaseFolder;
+use D6N\RuleEngine\CaseFolding\SpanishCaseFolder;
 use D6N\RuleEngine\CaseFolding\TurkishCaseFolder;
 use D6N\RuleEngine\CaseFolding\Utf8CaseFolder;
 use D6N\RuleEngine\Context;
@@ -103,7 +105,7 @@ class CaseFolderTest extends TestCase
     public function testFactoryRejectsUnknownLanguages(): void
     {
         $this->expectException(UnsupportedLanguageException::class);
-        $this->expectExceptionMessage('No case folding rules for language "xx"; supported: tr, az, crh, gag, el, en, de, es, fr, it, nl, pt.');
+        $this->expectExceptionMessage('No case folding rules for language "xx"; supported: tr, az, crh, gag, el, es, fr, en, de, it, nl, pt.');
 
         new CaseFolderFactory()->create('xx');
     }
@@ -215,16 +217,74 @@ class CaseFolderTest extends TestCase
         yield 'Crimean Tatar' => ['crh', TurkishCaseFolder::class];
         yield 'Gagauz' => ['gag', TurkishCaseFolder::class];
         yield 'Greek' => ['el-GR', GreekCaseFolder::class];
-        yield 'Spanish' => ['es', Utf8CaseFolder::class];
+        yield 'Spanish' => ['es', SpanishCaseFolder::class];
         yield 'Portuguese' => ['pt-BR', Utf8CaseFolder::class];
         yield 'Italian' => ['it', Utf8CaseFolder::class];
-        yield 'French' => ['fr_FR', Utf8CaseFolder::class];
+        yield 'French' => ['fr_FR', FrenchCaseFolder::class];
     }
 
     public function testInvalidUtf8IsFoldedWithoutNormalizing(): void
     {
-        foreach ([new Utf8CaseFolder(), new TurkishCaseFolder(), new GreekCaseFolder()] as $folder) {
+        foreach ([new Utf8CaseFolder(), new TurkishCaseFolder(), new GreekCaseFolder(), new FrenchCaseFolder(), new SpanishCaseFolder()] as $folder) {
             self::assertSame('caf?', $folder->fold("CAF\xE9"), $folder::class);
         }
+    }
+
+    #[DataProvider('frenchPairs')]
+    public function testFrenchRules(string $a, string $b, bool $equal): void
+    {
+        $folder = new FrenchCaseFolder();
+
+        self::assertSame($equal, $folder->fold($a) === $folder->fold($b));
+    }
+
+    /**
+     * @return iterable<string, array{string, string, bool}>
+     */
+    public static function frenchPairs(): iterable
+    {
+        yield 'acute' => ['ETAT', 'état', true];
+        yield 'grave' => ['A LA', 'à là', true];
+        yield 'circumflex' => ['FORET', 'forêt', true];
+        yield 'diaeresis' => ['NOEL', 'Noël', true];
+        yield 'cedilla' => ['GARCON', 'garçon', true];
+        yield 'with accents on caps' => ['ÉTAT', 'etat', true];
+        yield 'ligature kept' => ['ŒUVRE', 'œuvre', true];
+        yield 'ligature ≠ letters' => ['oeuvre', 'œuvre', false];
+        yield 'accent-only difference' => ['côte', 'cote', true];
+        yield 'different words' => ['état', 'étau', false];
+    }
+
+    #[DataProvider('spanishPairs')]
+    public function testSpanishRules(string $a, string $b, bool $equal): void
+    {
+        $folder = new SpanishCaseFolder();
+
+        self::assertSame($equal, $folder->fold($a) === $folder->fold($b));
+    }
+
+    /**
+     * @return iterable<string, array{string, string, bool}>
+     */
+    public static function spanishPairs(): iterable
+    {
+        yield 'acute' => ['ARBOL', 'árbol', true];
+        yield 'with accents on caps' => ['ÁRBOL', 'arbol', true];
+        yield 'diaeresis' => ['PINGUINO', 'pingüino', true];
+        yield 'ñ = Ñ' => ['AÑO', 'año', true];
+        yield 'ñ ≠ n' => ['año', 'ano', false];
+        yield 'ñ ≠ n in capitals' => ['ANO', 'año', false];
+        yield 'accent-only difference' => ['papa', 'papá', true];
+        yield 'other diacritics kept' => ['ç', 'c', false];
+    }
+
+    public function testFrenchAndSpanishThroughTheContext(): void
+    {
+        $rb = new RuleBuilder();
+
+        self::assertTrue($rb['v']->stringContainsInsensitive('etat')->evaluate(new Context(['v' => "CHEF D'ÉTAT"], language: 'fr')));
+        self::assertFalse($rb['v']->stringContainsInsensitive('etat')->evaluate(new Context(['v' => "CHEF D'ÉTAT"])));
+        self::assertTrue($rb['v']->startsWithInsensitive('arbol')->evaluate(new Context(['v' => 'ÁRBOLES'], language: 'es-ES')));
+        self::assertFalse($rb['v']->endsWithInsensitive('ano')->evaluate(new Context(['v' => 'FELIZ AÑO'], language: 'es')));
     }
 }

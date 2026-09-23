@@ -32,12 +32,12 @@ final class CaseFolderFactory
 
         // Accents dropped in capitals
         'el' => GreekCaseFolder::class,
+        'es' => SpanishCaseFolder::class,
+        'fr' => FrenchCaseFolder::class,
 
         // No language-specific case rules: listed so that setting them is not an error
         'en' => Utf8CaseFolder::class,
         'de' => Utf8CaseFolder::class,
-        'es' => Utf8CaseFolder::class,
-        'fr' => Utf8CaseFolder::class,
         'it' => Utf8CaseFolder::class,
         'nl' => Utf8CaseFolder::class,
         'pt' => Utf8CaseFolder::class,

@@ -82,7 +82,7 @@ Everything below is called on a RuleBuilder variable (`$rb['name']`). Arguments 
 
 Integers, floats and `Stringable` objects are treated as strings. A `null` value never contains, starts with, ends with or matches anything, and an empty prefix or suffix never matches. Arrays and other non-string values throw an `InvalidOperandException`, as do an invalid regular expression and a pattern that hits a PCRE limit (such as the backtrack limit).
 
-The case-insensitive operators follow the case rules of the Context's language. Without a language they use language-independent Unicode case folding (`ÇAĞRI` = `çağrı`, `Straße` = `STRASSE`, `AÑO` = `año`). With the recommended `intl` extension, text is also normalized, so an `é` typed as one character matches an `e` followed by a combining accent. Accents are never ignored by default: `côte` ≠ `cote`, `año` ≠ `ano`.
+The case-insensitive operators follow the case rules of the Context's language. Without a language they use language-independent Unicode case folding (`ÇAĞRI` = `çağrı`, `Straße` = `STRASSE`, `AÑO` = `año`). With the recommended `intl` extension, text is also normalized, so an `é` typed as one character matches an `e` followed by a combining accent. Accents are not ignored by default: `côte` ≠ `cote`, `año` ≠ `ano`.
 
 Some languages need their own rules:
 
@@ -90,7 +90,9 @@ Some languages need their own rules:
 |---|---|
 | `tr` (Turkish), `az` (Azerbaijani), `crh` (Crimean Tatar), `gag` (Gagauz) | dotless `I`/`ı` and dotted `İ`/`i` are different letters |
 | `el` (Greek) | accents on Greek letters are ignored, because capitals are written without them: `Αθήνα` = `ΑΘΗΝΑ` |
-| `en`, `de`, `es`, `fr`, `it`, `nl`, `pt` | Unicode defaults (same as no language) |
+| `fr` (French) | acute, grave, circumflex, diaeresis and cedilla are ignored: `ETAT` = `état`, `GARCON` = `garçon`; so `côte` = `cote` too |
+| `es` (Spanish) | the acute accent and diaeresis are ignored, the tilde is not: `ARBOL` = `árbol`, `año` ≠ `ano`; so `papa` = `papá` too |
+| `en`, `de`, `it`, `nl`, `pt` | Unicode defaults (same as no language) |
 
 Set the language on the Context:
 
