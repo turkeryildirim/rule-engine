@@ -28,7 +28,7 @@ final class RuleSerializer
 {
     public const int VERSION = 1;
 
-    private const int JSON_FLAGS = \JSON_THROW_ON_ERROR | \JSON_PRESERVE_ZERO_FRACTION | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE;
+    private const int JSON_FLAGS = \JSON_THROW_ON_ERROR | \JSON_INVALID_UTF8_SUBSTITUTE | \JSON_PRESERVE_ZERO_FRACTION | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE;
 
     private readonly OperatorRegistry $operators;
 
@@ -228,7 +228,7 @@ final class RuleSerializer
             throw new SerializationException('"name" must be a string', $path.'.name');
         }
 
-        $condition = $this->importNode(self::field($data, 'condition', $path), $path.'.condition');
+        $condition = $this->importNode(self::field($data, 'condition', $path), $path.'.condition', $actions);
         if (!$condition instanceof Proposition) {
             throw new SerializationException('A condition must be a proposition, not a value', $path.'.condition');
         }
@@ -237,20 +237,22 @@ final class RuleSerializer
     }
 
     /**
+     * @param array<string, callable> $actions
+     *
      * @throws SerializationException if the node is not valid
      */
-    private function importNode(mixed $data, string $path): Proposition|VariableOperand
+    private function importNode(mixed $data, string $path, array $actions): Proposition|VariableOperand
     {
         if (!\is_array($data)) {
             throw new SerializationException('A node must be an object', $path);
         }
 
         return match (true) {
-            \array_key_exists('op', $data)       => $this->importOperator($data, $path),
+            \array_key_exists('op', $data)       => $this->importOperator($data, $path, $actions),
             \array_key_exists('var', $data)      => new Variable(self::string($data, 'var', $path), $data['default'] ?? null),
             \array_key_exists('property', $data) => $this->importProperty($data, $path),
             \array_key_exists('value', $data)    => new Variable(null, $data['value']),
-            \array_key_exists('rule', $data)     => $this->importRule($data['rule'], $path.'.rule', []),
+            \array_key_exists('rule', $data)     => $this->importRule($data['rule'], $path.'.rule', $actions),
             default                              => throw new SerializationException('Unknown node; expected one of "op", "var", "property", "value" or "rule"', $path),
         };
     }
@@ -273,11 +275,12 @@ final class RuleSerializer
     }
 
     /**
-     * @param array<mixed> $data
+     * @param array<mixed>            $data
+     * @param array<string, callable> $actions
      *
      * @throws SerializationException if the operator node is not valid
      */
-    private function importOperator(array $data, string $path): Proposition|VariableOperand
+    private function importOperator(array $data, string $path, array $actions): Proposition|VariableOperand
     {
         $name = self::string($data, 'op', $path);
         try {
@@ -292,7 +295,7 @@ final class RuleSerializer
         }
         $operands = [];
         foreach ($operandData as $i => $operand) {
-            $operands[] = $this->importNode($operand, "$path.operands[$i]");
+            $operands[] = $this->importNode($operand, "$path.operands[$i]", $actions);
         }
 
         try {

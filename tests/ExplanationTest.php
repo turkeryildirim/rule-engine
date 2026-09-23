@@ -174,4 +174,11 @@ class ExplanationTest extends TestCase
         self::assertSame(TrueProposition::class, $rule->explain(new Context())->children[0]->name);
         self::assertSame('always', $rule->explain(new Context(), $registry)->children[0]->name);
     }
+
+    public function testInvalidUtf8DoesNotBreakReporting(): void
+    {
+        $explanation = new Explanation('', 'value', null, "caf\xE9");
+
+        self::assertSame("value: \"caf\u{FFFD}\"", (string) $explanation);
+    }
 }

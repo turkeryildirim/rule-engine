@@ -80,7 +80,7 @@ Everything below is called on a RuleBuilder variable (`$rb['name']`). Arguments 
 | `matches($pattern)` | `$a` matches the PCRE pattern, e.g. `'/^[A-Z]{2}\d+$/'` |
 | `length()` | the number of characters (UTF-8), or of items in an array |
 
-Integers, floats and `Stringable` objects are treated as strings. A `null` value never contains, starts with, ends with or matches anything, and an empty prefix or suffix never matches. Arrays and other non-string values throw an `InvalidOperandException`, as does an invalid regular expression.
+Integers, floats and `Stringable` objects are treated as strings. A `null` value never contains, starts with, ends with or matches anything, and an empty prefix or suffix never matches. Arrays and other non-string values throw an `InvalidOperandException`, as do an invalid regular expression and a pattern that hits a PCRE limit (such as the backtrack limit).
 
 The case-insensitive operators use Unicode case folding (`ÇAĞRI` = `çağrı`, `Straße` = `STRASSE`) and additionally treat the Turkish dotted and dotless i (`İ`, `I`, `ı`, `i`) as the same letter, so `İSTANBUL` = `istanbul`. The price is that words that differ only in that letter (such as *kır* and *kir*) also match each other.
 
@@ -219,7 +219,7 @@ The document looks like this:
 }
 ```
 
-`toArray()`, `ruleFromArray()` and `ruleSetFromArray()` do the same with plain arrays. Actions are closures and cannot be stored, so they are passed in on import. Literal values must be `null`, scalars, finite floats or arrays of those; exporting anything else throws a `SerializationException`, and so does importing an invalid document. The exception message names the offending node, e.g. `(at rules[0].condition.operands[1])`. Floats stay floats (`1.0` is written as `1.0`), so type-sensitive comparisons survive the round trip.
+`toArray()`, `ruleFromArray()` and `ruleSetFromArray()` do the same with plain arrays. Actions are closures and cannot be stored, so they are passed in on import, keyed by rule name (nested rules included). Object identity is not stored: a rule used in two places is imported as two equal rules. Literal values must be `null`, scalars, finite floats or arrays of those; exporting anything else throws a `SerializationException`, and so does importing an invalid document. The exception message names the offending node, e.g. `(at rules[0].condition.operands[1])`. Floats stay floats (`1.0` is written as `1.0`), so type-sensitive comparisons survive the round trip.
 
 ## Explaining and debugging rules
 
@@ -240,7 +240,7 @@ rule freeShipping: false
       value: ["TR","DE"]
 ```
 
-The explanation is also available as an array or JSON (`toArray()`, `json_encode()`), with each node's `path`, `type`, `name`, `result` and `error`. Explaining evaluates every operand, even where normal evaluation would short-circuit.
+The explanation is also available as an array or JSON (`toArray()`, `json_encode()`), with each node's `path`, `type`, `name`, `result` and `error`. Explaining evaluates every operand, even where normal evaluation would short-circuit, so facts defined as plain closures run again; use `Context::share()` for facts that are expensive or have side effects.
 
 When a condition fails with an error, `Rule::evaluate()` (and so `execute()` and `RuleSet`) throws an `EvaluationException` that says where it happened:
 
@@ -248,7 +248,7 @@ When a condition fails with an error, `Rule::evaluate()` (and so `execute()` and
 Rule "average" failed at condition.operands[1].operands[0] (logicalAnd > greaterThan > divide): Division by zero
 ```
 
-`getPrevious()` returns the original exception, `getRuleName()` and `getFailurePath()` the location, and `getExplanation()` the full tree with every value that led up to the error. Paths use the same notation as the JSON format.
+`getPrevious()` returns the original exception, `getRuleName()` and `getFailurePath()` the location, and `getExplanation()` the full tree with every value that led up to the error. Paths use the same notation as the JSON format. The explanation is built only when an error occurs, by evaluating the rule once more. To handle a specific error, catch `EvaluationException` and inspect `getPrevious()`: the original exception no longer reaches a `catch` around `evaluate()` directly.
 
 ## Exceptions
 
@@ -365,7 +365,7 @@ composer stan       # PHPStan at max level with strict rules
 composer cs-fix     # apply the coding standard
 ```
 
-`composer coverage` writes `build/coverage.json` (via [phpunit-json-coverage-report](https://github.com/turkeryildirim/phpunit-json-coverage-report)) and needs Xdebug or PCOV.
+`composer coverage` writes `build/coverage.json` (via [phpunit-json-coverage-report](https://github.com/turkeryildirim/phpunit-json-coverage-report)) and needs Xdebug; PCOV does not support the path coverage it collects.
 
 ## Credits and license
 

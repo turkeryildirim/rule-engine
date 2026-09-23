@@ -246,4 +246,29 @@ class RuleSerializerTest extends TestCase
         self::assertSame($serializer->toJson($rule), $serializer->toJson($imported));
         self::assertTrue($imported->evaluate(new Context(['order' => ['customer' => ['address' => ['city' => 'Ankara']]]])));
     }
+
+    public function testInvalidUtf8IsSubstitutedOnExport(): void
+    {
+        $rb = new RuleBuilder();
+
+        $json = new RuleSerializer()->toJson($rb->create($rb['name']->equalTo("caf\xE9")), pretty: false);
+
+        self::assertStringContainsString("caf\u{FFFD}", $json);
+    }
+
+    public function testActionsAreAttachedToNestedRulesToo(): void
+    {
+        $rb = new RuleBuilder();
+        $serializer = new RuleSerializer();
+        $json = $serializer->toJson($rb->create($rb->logicalNot($rb->create($rb['a']->isNull(), name: 'inner')), name: 'outer'));
+
+        $imported = $serializer->ruleFromJson($json, ['inner' => new CallCounter()]);
+        $not = $imported->getCondition();
+        self::assertInstanceOf(\D6N\RuleEngine\Operator\LogicalNot::class, $not);
+        $inner = $not->getOperands()[0];
+
+        self::assertInstanceOf(Rule::class, $inner);
+        self::assertTrue($inner->hasAction());
+        self::assertFalse($imported->hasAction());
+    }
 }

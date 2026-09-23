@@ -28,6 +28,10 @@ class Matches extends VariableOperator implements Proposition
             \restore_error_handler();
         }
 
+        if (false === $matched) {
+            throw new InvalidOperandException('Regular expression failed: '.\preg_last_error_msg());
+        }
+
         return null !== $subject && 1 === $matched;
     }
 

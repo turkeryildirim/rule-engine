@@ -181,4 +181,22 @@ class ValueOperatorsTest extends TestCase
         self::assertGreaterThanOrEqual($before, $now);
         self::assertLessThanOrEqual(new \DateTimeImmutable(), $now);
     }
+
+    public function testRegexRuntimeErrorsAreReported(): void
+    {
+        $limit = \ini_get('pcre.backtrack_limit');
+        $jit = \ini_get('pcre.jit');
+        \ini_set('pcre.backtrack_limit', '10');
+        \ini_set('pcre.jit', '0');
+
+        try {
+            $this->expectException(InvalidOperandException::class);
+            $this->expectExceptionMessage('Regular expression failed: Backtrack limit exhausted');
+
+            new RuleBuilder()['v']->matches('/(?:\D+|<\d+>)*[!?]/')->evaluate(new Context(['v' => 'foobar foobar foobar']));
+        } finally {
+            \ini_set('pcre.backtrack_limit', (string) $limit);
+            \ini_set('pcre.jit', (string) $jit);
+        }
+    }
 }
