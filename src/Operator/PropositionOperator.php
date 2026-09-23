@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Operator;
+namespace D6N\RuleEngine\Operator;
 
-use Ruler\Operator as BaseOperator;
-use Ruler\Proposition;
+use D6N\RuleEngine\Operator as BaseOperator;
+use D6N\RuleEngine\Proposition;
 
 /**
  * @extends BaseOperator<Proposition>

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\Fixtures;
+namespace D6N\RuleEngine\Test\Fixtures;
 
-use Ruler\Context;
-use Ruler\Value;
-use Ruler\VariableOperand;
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Value;
+use D6N\RuleEngine\VariableOperand;
 
 /**
  * A custom value-producing operator that is not a VariableOperator subclass.

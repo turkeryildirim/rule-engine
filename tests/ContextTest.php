@@ -24,14 +24,14 @@ declare(strict_types=1);
  * THE SOFTWARE.
  */
 
-namespace Ruler\Test;
+namespace D6N\RuleEngine\Test;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Test\Fixtures\Fact;
+use D6N\RuleEngine\Test\Fixtures\Invokable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\Test\Fixtures\Fact;
-use Ruler\Test\Fixtures\Invokable;
 
 /**
  * Ruler Context test.

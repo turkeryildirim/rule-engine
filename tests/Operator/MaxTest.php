@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\Operator;
+namespace D6N\RuleEngine\Test\Operator;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Operator\Max;
+use D6N\RuleEngine\Variable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\Operator\Max;
-use Ruler\Variable;
 
 class MaxTest extends TestCase
 {

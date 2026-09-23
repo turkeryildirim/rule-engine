@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\Operator;
+namespace D6N\RuleEngine\Test\Operator;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Operator\LogicalOr;
+use D6N\RuleEngine\Test\Fixtures\FalseProposition;
+use D6N\RuleEngine\Test\Fixtures\TrueProposition;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\Operator\LogicalOr;
-use Ruler\Test\Fixtures\FalseProposition;
-use Ruler\Test\Fixtures\TrueProposition;
 
 class LogicalOrTest extends TestCase
 {

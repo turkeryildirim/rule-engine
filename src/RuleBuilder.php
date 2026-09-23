@@ -11,13 +11,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Ruler;
+namespace D6N\RuleEngine;
 
-use Ruler\Operator\LogicalAnd;
-use Ruler\Operator\LogicalNot;
-use Ruler\Operator\LogicalOr;
-use Ruler\Operator\LogicalXor;
-use Ruler\RuleBuilder\Variable;
+use D6N\RuleEngine\Operator\LogicalAnd;
+use D6N\RuleEngine\Operator\LogicalNot;
+use D6N\RuleEngine\Operator\LogicalOr;
+use D6N\RuleEngine\Operator\LogicalXor;
+use D6N\RuleEngine\RuleBuilder\Variable;
 
 /**
  * RuleBuilder.

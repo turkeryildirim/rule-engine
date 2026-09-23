@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Ruler;
+namespace D6N\RuleEngine;
 
 /**
  * The Proposition interface represents a propositional statement.

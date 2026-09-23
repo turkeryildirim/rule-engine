@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\Operator;
+namespace D6N\RuleEngine\Test\Operator;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Operator\StringContains;
+use D6N\RuleEngine\Operator\StringDoesNotContain;
+use D6N\RuleEngine\Variable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\Operator\StringContains;
-use Ruler\Operator\StringDoesNotContain;
-use Ruler\Variable;
 
 class StringContainsTest extends TestCase
 {

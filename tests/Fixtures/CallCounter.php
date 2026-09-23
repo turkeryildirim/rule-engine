@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\Fixtures;
+namespace D6N\RuleEngine\Test\Fixtures;
 
 /**
  * An invokable spy that records how often, and with what, it was called.

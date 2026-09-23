@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test;
+namespace D6N\RuleEngine\Test;
 
+use D6N\RuleEngine\Value;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Ruler\Value;
 
 class ValueTest extends TestCase
 {

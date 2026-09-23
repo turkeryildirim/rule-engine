@@ -37,12 +37,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Ruler\\": "src/"
+            "D6N\\RuleEngine\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Ruler\\Test\\": "tests/"
+            "D6N\\RuleEngine\\Test\\": "tests/"
         }
     },
     "scripts": {

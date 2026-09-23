@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test;
+namespace D6N\RuleEngine\Test;
 
+use D6N\RuleEngine\Set;
+use D6N\RuleEngine\Test\Fixtures\toStringable;
+use D6N\RuleEngine\Value;
 use PHPUnit\Framework\TestCase;
-use Ruler\Set;
-use Ruler\Test\Fixtures\toStringable;
-use Ruler\Value;
 
 class SetTest extends TestCase
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\RuleBuilder;
+namespace D6N\RuleEngine\Test\RuleBuilder;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\RuleBuilder;
+use D6N\RuleEngine\RuleBuilder\Variable;
+use D6N\RuleEngine\RuleBuilder\VariableProperty;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\RuleBuilder;
-use Ruler\RuleBuilder\Variable;
-use Ruler\RuleBuilder\VariableProperty;
 
 class VariablePropertyTest extends TestCase
 {

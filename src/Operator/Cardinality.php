@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Operator;
+namespace D6N\RuleEngine\Operator;
 
 /**
  * How many operands an Operator accepts.

@@ -11,10 +11,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Ruler\Operator;
+namespace D6N\RuleEngine\Operator;
 
-use Ruler\Context;
-use Ruler\Proposition;
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Proposition;
 
 /**
  * A logical XOR operator.

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\Functional;
+namespace D6N\RuleEngine\Test\Functional;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\RuleBuilder;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\RuleBuilder;
 
 class SetTest extends TestCase
 {

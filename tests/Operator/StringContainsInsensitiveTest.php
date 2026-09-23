@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\Operator;
+namespace D6N\RuleEngine\Test\Operator;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Operator\StringContainsInsensitive;
+use D6N\RuleEngine\Operator\StringDoesNotContainInsensitive;
+use D6N\RuleEngine\Variable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\Operator\StringContainsInsensitive;
-use Ruler\Operator\StringDoesNotContainInsensitive;
-use Ruler\Variable;
 
 class StringContainsInsensitiveTest extends TestCase
 {

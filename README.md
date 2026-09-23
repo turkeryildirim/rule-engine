@@ -7,8 +7,8 @@ A small, stateless production rules engine for PHP 8.5+.
 You describe conditions with a fluent DSL, feed them facts through a `Context`, and either ask whether a rule holds or let it run an action. Rules are plain objects: they don't care where your data comes from, and they don't store anything between evaluations.
 
 ```php
-use Ruler\Context;
-use Ruler\RuleBuilder;
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\RuleBuilder;
 
 $rb = new RuleBuilder();
 
@@ -38,7 +38,7 @@ $freeShipping->execute($context);  // prints "Free shipping for order 1042"
 composer require turkeryildirim/rule-engine
 ```
 
-Requires PHP 8.5 or newer and has no runtime dependencies. Classes live in the `Ruler\` namespace.
+Requires PHP 8.5 or newer and has no runtime dependencies. Classes live in the `D6N\RuleEngine\` namespace.
 
 ## Core concepts
 
@@ -132,7 +132,7 @@ if ($isAdult->evaluate($context)) {
 When you `execute()` a rule and its condition holds, its action is called with the `Context`. An action that is not callable is rejected with a `TypeError` as soon as the rule is created.
 
 ```php
-use Ruler\RuleSet;
+use D6N\RuleEngine\RuleSet;
 
 $rules = new RuleSet([$welcomeBack, $askToSignUp]);
 $rules->addRule($redirectToLogin);
@@ -193,11 +193,11 @@ Write a class that extends `VariableOperator` and implements either `Proposition
 ```php
 namespace App\Rules;
 
-use Ruler\Context;
-use Ruler\Operator\Cardinality;
-use Ruler\Operator\VariableOperator;
-use Ruler\Proposition;
-use Ruler\Value;
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Operator\Cardinality;
+use D6N\RuleEngine\Operator\VariableOperator;
+use D6N\RuleEngine\Proposition;
+use D6N\RuleEngine\Value;
 
 final class ALotGreaterThan extends VariableOperator implements Proposition
 {

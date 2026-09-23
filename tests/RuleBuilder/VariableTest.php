@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\RuleBuilder;
+namespace D6N\RuleEngine\Test\RuleBuilder;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Operator\Addition;
+use D6N\RuleEngine\Operator\Ceil;
+use D6N\RuleEngine\Operator\Division;
+use D6N\RuleEngine\Operator\Exponentiate;
+use D6N\RuleEngine\Operator\Floor;
+use D6N\RuleEngine\Operator\Modulo;
+use D6N\RuleEngine\Operator\Multiplication;
+use D6N\RuleEngine\Operator\Negation;
+use D6N\RuleEngine\Operator\Subtraction;
+use D6N\RuleEngine\RuleBuilder;
+use D6N\RuleEngine\RuleBuilder\Variable;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\Operator\Addition;
-use Ruler\Operator\Ceil;
-use Ruler\Operator\Division;
-use Ruler\Operator\Exponentiate;
-use Ruler\Operator\Floor;
-use Ruler\Operator\Modulo;
-use Ruler\Operator\Multiplication;
-use Ruler\Operator\Negation;
-use Ruler\Operator\Subtraction;
-use Ruler\RuleBuilder;
-use Ruler\RuleBuilder\Variable;
 
 class VariableTest extends TestCase
 {

@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Ruler;
+namespace D6N\RuleEngine;
 
-use Ruler\Operator\Cardinality;
+use D6N\RuleEngine\Operator\Cardinality;
 
 /**
  * @template TOperand of Proposition|VariableOperand

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test;
+namespace D6N\RuleEngine\Test;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Rule;
+use D6N\RuleEngine\Test\Fixtures\CallbackProposition;
+use D6N\RuleEngine\Test\Fixtures\CallCounter;
+use D6N\RuleEngine\Test\Fixtures\FalseProposition;
+use D6N\RuleEngine\Test\Fixtures\TrueProposition;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\Rule;
-use Ruler\Test\Fixtures\CallbackProposition;
-use Ruler\Test\Fixtures\CallCounter;
-use Ruler\Test\Fixtures\FalseProposition;
-use Ruler\Test\Fixtures\TrueProposition;
 
 class RuleTest extends TestCase
 {

@@ -11,11 +11,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Ruler\RuleBuilder;
+namespace D6N\RuleEngine\RuleBuilder;
 
-use Ruler\Context;
-use Ruler\PropertyResolver;
-use Ruler\Value;
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\PropertyResolver;
+use D6N\RuleEngine\Value;
 
 /**
  * A propositional VariableProperty.

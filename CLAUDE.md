@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-`turkeryildirim/rule-engine` (https://github.com/turkeryildirim/rule-engine) is a stateless production rules engine library for PHP 8.5+ (no runtime dependencies), a rewrite of bobthecow/Ruler. The namespace is still `Ruler\`. There is no application to run; the test suite is the main way to exercise the code.
+`turkeryildirim/rule-engine` (https://github.com/turkeryildirim/rule-engine) is a stateless production rules engine library for PHP 8.5+ (no runtime dependencies), a rewrite of bobthecow/Ruler. The namespace is `D6N\RuleEngine\` (tests: `D6N\RuleEngine\Test\`). There is no application to run; the test suite is the main way to exercise the code.
 
 ## Commands
 
@@ -71,4 +71,4 @@ Unknown method calls go through `__call`. It resolves `ucfirst($name)` in namesp
 
 ## Tests
 
-Tests live in `tests/` under `Ruler\Test\`, mirror `src/`, and must end in `Test.php`. `tests/Functional/` has end-to-end DSL examples. Test doubles live in `tests/Fixtures/`. Use `CallCounter` rather than by-reference closure variables, which PHPStan can't track. Behavior changes and bug fixes need tests.
+Tests live in `tests/` under `D6N\RuleEngine\Test\`, mirror `src/`, and must end in `Test.php`. `tests/Functional/` has end-to-end DSL examples. Test doubles live in `tests/Fixtures/`. Use `CallCounter` rather than by-reference closure variables, which PHPStan can't track. Behavior changes and bug fixes need tests.

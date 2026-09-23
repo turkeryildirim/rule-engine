@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\Operator;
+namespace D6N\RuleEngine\Test\Operator;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Operator\GreaterThanOrEqualTo;
+use D6N\RuleEngine\Variable;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\Operator\GreaterThanOrEqualTo;
-use Ruler\Variable;
 
 class LessThanOrEqualToTest extends TestCase
 {

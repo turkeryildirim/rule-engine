@@ -11,13 +11,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Ruler\Test\Fixtures;
+namespace D6N\RuleEngine\Test\Fixtures;
 
-use Ruler\Context;
-use Ruler\Operator\Cardinality;
-use Ruler\Operator\VariableOperator;
-use Ruler\Proposition;
-use Ruler\Value;
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Operator\Cardinality;
+use D6N\RuleEngine\Operator\VariableOperator;
+use D6N\RuleEngine\Proposition;
+use D6N\RuleEngine\Value;
 
 /**
  * An EqualTo comparison operator.

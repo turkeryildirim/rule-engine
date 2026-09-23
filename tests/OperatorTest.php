@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test;
+namespace D6N\RuleEngine\Test;
 
+use D6N\RuleEngine\Operator\EqualTo;
+use D6N\RuleEngine\Operator\LogicalAnd;
+use D6N\RuleEngine\Operator\LogicalNot;
+use D6N\RuleEngine\Test\Fixtures\TrueProposition;
+use D6N\RuleEngine\Variable;
 use PHPUnit\Framework\TestCase;
-use Ruler\Operator\EqualTo;
-use Ruler\Operator\LogicalAnd;
-use Ruler\Operator\LogicalNot;
-use Ruler\Test\Fixtures\TrueProposition;
-use Ruler\Variable;
 
 class OperatorTest extends TestCase
 {

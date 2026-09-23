@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test;
+namespace D6N\RuleEngine\Test;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\RuleBuilder;
+use D6N\RuleEngine\RuleBuilder\Variable;
+use D6N\RuleEngine\Test\Fixtures\CallCounter;
+use D6N\RuleEngine\Test\Fixtures\FalseProposition;
+use D6N\RuleEngine\Test\Fixtures\TrueProposition;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\RuleBuilder;
-use Ruler\RuleBuilder\Variable;
-use Ruler\Test\Fixtures\CallCounter;
-use Ruler\Test\Fixtures\FalseProposition;
-use Ruler\Test\Fixtures\TrueProposition;
 
 class RuleBuilderTest extends TestCase
 {
@@ -98,7 +98,7 @@ class RuleBuilderTest extends TestCase
     public function testExternalOperators(): void
     {
         $rb = new RuleBuilder();
-        $rb->registerOperatorNamespace('\Ruler\Test\Fixtures');
+        $rb->registerOperatorNamespace('\D6N\RuleEngine\Test\Fixtures');
 
         $context = new Context(['a' => 100]);
         $varA = $rb['a'];
@@ -114,7 +114,7 @@ class RuleBuilderTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Unknown operator: "aLotBiggerThan"');
         $rb = new RuleBuilder();
-        $rb->registerOperatorNamespace('\Ruler\Test\Fixtures');
+        $rb->registerOperatorNamespace('\D6N\RuleEngine\Test\Fixtures');
         $varA = $rb['a'];
 
         $varA->aLotBiggerThan(1); // @phpstan-ignore method.notFound (unknown operator on purpose)
@@ -134,7 +134,7 @@ class RuleBuilderTest extends TestCase
     public function testCustomValueOperatorsCanBeChained(): void
     {
         $rb = new RuleBuilder();
-        $rb->registerOperatorNamespace('\Ruler\Test\Fixtures');
+        $rb->registerOperatorNamespace('\D6N\RuleEngine\Test\Fixtures');
 
         $plusOne = $rb['a']->plusOne(); // @phpstan-ignore method.notFound (resolved by __call)
 
@@ -145,7 +145,7 @@ class RuleBuilderTest extends TestCase
     public function testClassesThatAreNotOperatorsAreNotResolved(): void
     {
         $rb = new RuleBuilder();
-        $rb->registerOperatorNamespace('\Ruler\Test\Fixtures');
+        $rb->registerOperatorNamespace('\D6N\RuleEngine\Test\Fixtures');
 
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Unknown operator: "notAnOperator"');

@@ -26,7 +26,7 @@ declare(strict_types=1);
  * THE SOFTWARE.
  */
 
-namespace Ruler;
+namespace D6N\RuleEngine;
 
 /**
  * Ruler Context.

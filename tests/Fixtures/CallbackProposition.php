@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\Fixtures;
+namespace D6N\RuleEngine\Test\Fixtures;
 
-use Ruler\Context;
-use Ruler\Proposition;
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Proposition;
 
 final readonly class CallbackProposition implements Proposition
 {

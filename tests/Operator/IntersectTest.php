@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ruler\Test\Operator;
+namespace D6N\RuleEngine\Test\Operator;
 
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Operator\Intersect;
+use D6N\RuleEngine\Variable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Ruler\Context;
-use Ruler\Operator\Intersect;
-use Ruler\Variable;
 
 class IntersectTest extends TestCase
 {

@@ -11,11 +11,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Ruler\Operator;
+namespace D6N\RuleEngine\Operator;
 
-use Ruler\Context;
-use Ruler\Value;
-use Ruler\VariableOperand;
+use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Value;
+use D6N\RuleEngine\VariableOperand;
 
 /**
  * A Division Arithmetic Operator.
