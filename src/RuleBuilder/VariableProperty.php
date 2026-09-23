@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace D6N\RuleEngine\RuleBuilder;
 
 use D6N\RuleEngine\Context;
+use D6N\RuleEngine\PropertyReference;
 use D6N\RuleEngine\PropertyResolver;
 use D6N\RuleEngine\Value;
 
@@ -37,7 +38,7 @@ use D6N\RuleEngine\Value;
  *
  * @author Justin Hileman <justin@justinhileman.info>
  */
-class VariableProperty extends Variable
+class VariableProperty extends Variable implements PropertyReference
 {
     /**
      * VariableProperty class constructor.
@@ -49,6 +50,12 @@ class VariableProperty extends Variable
     public function __construct(private readonly Variable $parent, string $name, mixed $value = null)
     {
         parent::__construct($this->parent->getRuleBuilder(), $name, $value);
+    }
+
+    #[\Override]
+    public function getParent(): Variable
+    {
+        return $this->parent;
     }
 
     /**

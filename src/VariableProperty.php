@@ -23,7 +23,7 @@ namespace D6N\RuleEngine;
  *
  * @author Justin Hileman <justin@justinhileman.info>
  */
-class VariableProperty extends Variable
+class VariableProperty extends Variable implements PropertyReference
 {
     /**
      * VariableProperty class constructor.
@@ -35,6 +35,12 @@ class VariableProperty extends Variable
     public function __construct(private readonly Variable $parent, string $name, mixed $value = null)
     {
         parent::__construct($name, $value);
+    }
+
+    #[\Override]
+    public function getParent(): Variable
+    {
+        return $this->parent;
     }
 
     /**
