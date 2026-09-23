@@ -1,0 +1,62 @@
+{
+    "name": "turkeryildirim/rule-engine",
+    "description": "A small, stateless production rules engine for PHP 8.5+.",
+    "keywords": [
+        "rules",
+        "rule engine",
+        "business rules",
+        "dsl"
+    ],
+    "homepage": "https://github.com/turkeryildirim/rule-engine",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Türker YILDIRIM",
+            "email": "aslankervan@gmail.com"
+        },
+        {
+            "name": "Justin Hileman",
+            "email": "justin@justinhileman.info",
+            "homepage": "http://justinhileman.com/",
+            "role": "Author of the original Ruler library"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/turkeryildirim/rule-engine/issues",
+        "source": "https://github.com/turkeryildirim/rule-engine"
+    },
+    "require": {
+        "php": "^8.5"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/phpstan": "^2.2",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpunit/phpunit": "^13.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ruler\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ruler\\Test\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "stan": "phpstan analyse --memory-limit=1G",
+        "cs": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --dry-run --diff",
+        "cs-fix": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix",
+        "check": [
+            "@cs",
+            "@stan",
+            "@test"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
