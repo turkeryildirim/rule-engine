@@ -9,10 +9,10 @@ use D6N\RuleEngine\Exception\UnsupportedLanguageException;
 /**
  * Creates the CaseFolder for a language.
  *
- * Languages are identified by their ISO 639-1 code; region suffixes are
+ * Languages are identified by their ISO 639 code; region suffixes are
  * ignored, so "tr", "tr-TR" and "tr_TR" all give the Turkish folder.
- * Languages without special rules don't need an entry: use the default
- * Utf8CaseFolder by not setting a language at all.
+ * Languages whose case rules are the Unicode defaults map to Utf8CaseFolder,
+ * which is also what a Context without a language uses.
  *
  *     $factory = new CaseFolderFactory();
  *     $factory->register('el', GreekCaseFolder::class);
@@ -24,7 +24,23 @@ final class CaseFolderFactory
      * @var array<string, class-string<CaseFolder>>
      */
     public const array BUILT_INS = [
-        'tr' => TurkishCaseFolder::class,
+        // Dotless and dotted i
+        'tr'  => TurkishCaseFolder::class, // Turkish
+        'az'  => TurkishCaseFolder::class, // Azerbaijani
+        'crh' => TurkishCaseFolder::class, // Crimean Tatar
+        'gag' => TurkishCaseFolder::class, // Gagauz
+
+        // Accents dropped in capitals
+        'el' => GreekCaseFolder::class,
+
+        // No language-specific case rules: listed so that setting them is not an error
+        'en' => Utf8CaseFolder::class,
+        'de' => Utf8CaseFolder::class,
+        'es' => Utf8CaseFolder::class,
+        'fr' => Utf8CaseFolder::class,
+        'it' => Utf8CaseFolder::class,
+        'nl' => Utf8CaseFolder::class,
+        'pt' => Utf8CaseFolder::class,
     ];
 
     /** @var array<string, class-string<CaseFolder>> */
@@ -53,7 +69,7 @@ final class CaseFolderFactory
     {
         $class = $this->folders[self::normalize($language)] ?? null;
         if (null === $class) {
-            throw new UnsupportedLanguageException(\sprintf('No case folding rules for language "%s"; supported: %s. Omit the language to use Unicode defaults.', $language, \implode(', ', \array_keys($this->folders))));
+            throw new UnsupportedLanguageException(\sprintf('No case folding rules for language "%s"; supported: %s. Omit the language to use Unicode defaults, or register the language.', $language, \implode(', ', \array_keys($this->folders))));
         }
 
         return new $class();

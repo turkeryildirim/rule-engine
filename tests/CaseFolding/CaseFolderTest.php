@@ -6,6 +6,7 @@ namespace D6N\RuleEngine\Test\CaseFolding;
 
 use D6N\RuleEngine\CaseFolding\CaseFolder;
 use D6N\RuleEngine\CaseFolding\CaseFolderFactory;
+use D6N\RuleEngine\CaseFolding\GreekCaseFolder;
 use D6N\RuleEngine\CaseFolding\TurkishCaseFolder;
 use D6N\RuleEngine\CaseFolding\Utf8CaseFolder;
 use D6N\RuleEngine\Context;
@@ -49,6 +50,7 @@ class CaseFolderTest extends TestCase
         yield 'ISPARTA = ısparta' => ['ISPARTA', 'ısparta', true];
         yield 'ÇAĞRI = çağrı' => ['ÇAĞRI', 'çağrı', true];
         yield 'ÖĞÜŞ = öğüş' => ['ÖĞÜŞ', 'öğüş', true];
+        yield 'decomposed İ = i' => ["I\u{0307}STANBUL", 'istanbul', true];
     }
 
     #[DataProvider('unicodePairs')]
@@ -71,6 +73,13 @@ class CaseFolderTest extends TestCase
         yield 'I = i' => ['I', 'i', true];
         yield 'İ ≠ i (no rules)' => ['İ', 'i', false];
         yield 'I ≠ ı (no rules)' => ['I', 'ı', false];
+        yield 'ẞ = ss' => ['STRAẞE', 'strasse', true];
+        yield 'composed = decomposed é' => ['café', "CAFE\u{0301}", true];
+        yield 'ñ = Ñ' => ['AÑO', 'año', true];
+        yield 'ñ ≠ n' => ['año', 'ano', false];
+        yield 'é ≠ e' => ['côte', 'cote', false];
+        yield 'œ = Œ' => ['ŒUVRE', 'œuvre', true];
+        yield 'Greek accents kept' => ['Αθήνα', 'ΑΘΗΝΑ', false];
     }
 
     #[DataProvider('languageCodes')]
@@ -94,7 +103,7 @@ class CaseFolderTest extends TestCase
     public function testFactoryRejectsUnknownLanguages(): void
     {
         $this->expectException(UnsupportedLanguageException::class);
-        $this->expectExceptionMessage('No case folding rules for language "xx"; supported: tr.');
+        $this->expectExceptionMessage('No case folding rules for language "xx"; supported: tr, az, crh, gag, el, en, de, es, fr, it, nl, pt.');
 
         new CaseFolderFactory()->create('xx');
     }
@@ -165,5 +174,57 @@ class CaseFolderTest extends TestCase
         yield 'ends with, tr' => ['endsWithInsensitive', 'ÇAĞRI', 'rı', 'tr', true];
         yield 'ends with, tr, ı ≠ i' => ['endsWithInsensitive', 'ÇAĞRI', 'ri', 'tr', false];
         yield 'ends with, default, I=i' => ['endsWithInsensitive', 'ÇAĞRI', 'ri', 'default', true];
+    }
+
+    #[DataProvider('greekPairs')]
+    public function testGreekRules(string $a, string $b, bool $equal): void
+    {
+        $folder = new GreekCaseFolder();
+
+        self::assertSame($equal, $folder->fold($a) === $folder->fold($b));
+    }
+
+    /**
+     * @return iterable<string, array{string, string, bool}>
+     */
+    public static function greekPairs(): iterable
+    {
+        yield 'tonos dropped in capitals' => ['Αθήνα', 'ΑΘΗΝΑ', true];
+        yield 'final sigma' => ['οδός', 'ΟΔΟΣ', true];
+        yield 'dialytika' => ['ΠΡΩΪΝΟ', 'πρωινό', true];
+        yield 'polytonic' => ['Ἀθῆναι', 'ΑΘΗΝΑΙ', true];
+        yield 'different words' => ['Αθήνα', 'Σπάρτη', false];
+        yield 'Latin accents are kept' => ['CAFÉ', 'cafe', false];
+    }
+
+    /**
+     * @param class-string<CaseFolder> $expected
+     */
+    #[DataProvider('mappedLanguages')]
+    public function testLanguagesMapToTheirRules(string $language, string $expected): void
+    {
+        self::assertInstanceOf($expected, new CaseFolderFactory()->create($language));
+    }
+
+    /**
+     * @return iterable<string, array{string, class-string<CaseFolder>}>
+     */
+    public static function mappedLanguages(): iterable
+    {
+        yield 'Azerbaijani' => ['az', TurkishCaseFolder::class];
+        yield 'Crimean Tatar' => ['crh', TurkishCaseFolder::class];
+        yield 'Gagauz' => ['gag', TurkishCaseFolder::class];
+        yield 'Greek' => ['el-GR', GreekCaseFolder::class];
+        yield 'Spanish' => ['es', Utf8CaseFolder::class];
+        yield 'Portuguese' => ['pt-BR', Utf8CaseFolder::class];
+        yield 'Italian' => ['it', Utf8CaseFolder::class];
+        yield 'French' => ['fr_FR', Utf8CaseFolder::class];
+    }
+
+    public function testInvalidUtf8IsFoldedWithoutNormalizing(): void
+    {
+        foreach ([new Utf8CaseFolder(), new TurkishCaseFolder(), new GreekCaseFolder()] as $folder) {
+            self::assertSame('caf?', $folder->fold("CAF\xE9"), $folder::class);
+        }
     }
 }
