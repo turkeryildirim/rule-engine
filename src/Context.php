@@ -67,6 +67,8 @@ class Context implements \ArrayAccess
     /** @var \SplObjectStorage<object, null> */
     private readonly \SplObjectStorage $protected;
 
+    private readonly Clock $clock;
+
     /**
      * Context constructor.
      *
@@ -74,9 +76,11 @@ class Context implements \ArrayAccess
      * values.
      *
      * @param array<array-key, mixed> $values
+     * @param Clock|null              $clock  the source of "now" for relative date operators (default: system time)
      */
-    public function __construct(array $values = [])
+    public function __construct(array $values = [], ?Clock $clock = null)
     {
+        $this->clock = $clock ?? new SystemClock();
         $this->shared = new \SplObjectStorage();
         $this->protected = new \SplObjectStorage();
 
@@ -234,6 +238,14 @@ class Context implements \ArrayAccess
         $name = $this->definedName($name);
 
         return isset($this->frozen[$name]) ? $this->raw[$name] : $this->values[$name];
+    }
+
+    /**
+     * The current time, as used by relative date operators such as withinLast().
+     */
+    public function now(): \DateTimeImmutable
+    {
+        return $this->clock->now();
     }
 
     /**

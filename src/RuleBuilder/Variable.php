@@ -15,26 +15,45 @@ namespace D6N\RuleEngine\RuleBuilder;
 
 use D6N\RuleEngine\Exception\InvalidNameException;
 use D6N\RuleEngine\Exception\UnknownOperatorException;
+use D6N\RuleEngine\Operator\After;
+use D6N\RuleEngine\Operator\Before;
+use D6N\RuleEngine\Operator\Between;
+use D6N\RuleEngine\Operator\BetweenDates;
+use D6N\RuleEngine\Operator\ContainsAll;
+use D6N\RuleEngine\Operator\ContainsAny;
 use D6N\RuleEngine\Operator\ContainsSubset;
 use D6N\RuleEngine\Operator\DoesNotContainSubset;
 use D6N\RuleEngine\Operator\EndsWith;
+use D6N\RuleEngine\Operator\EndsWithAny;
 use D6N\RuleEngine\Operator\EndsWithInsensitive;
 use D6N\RuleEngine\Operator\EqualTo;
 use D6N\RuleEngine\Operator\GreaterThan;
 use D6N\RuleEngine\Operator\GreaterThanOrEqualTo;
+use D6N\RuleEngine\Operator\In;
+use D6N\RuleEngine\Operator\IsArray;
+use D6N\RuleEngine\Operator\IsBool;
+use D6N\RuleEngine\Operator\IsEmpty;
+use D6N\RuleEngine\Operator\IsNull;
+use D6N\RuleEngine\Operator\IsNumeric;
+use D6N\RuleEngine\Operator\IsString;
 use D6N\RuleEngine\Operator\LessThan;
 use D6N\RuleEngine\Operator\LessThanOrEqualTo;
+use D6N\RuleEngine\Operator\Matches;
 use D6N\RuleEngine\Operator\NotEqualTo;
+use D6N\RuleEngine\Operator\NotIn;
 use D6N\RuleEngine\Operator\NotSameAs;
+use D6N\RuleEngine\Operator\OlderThan;
 use D6N\RuleEngine\Operator\SameAs;
 use D6N\RuleEngine\Operator\SetContains;
 use D6N\RuleEngine\Operator\SetDoesNotContain;
 use D6N\RuleEngine\Operator\StartsWith;
+use D6N\RuleEngine\Operator\StartsWithAny;
 use D6N\RuleEngine\Operator\StartsWithInsensitive;
 use D6N\RuleEngine\Operator\StringContains;
 use D6N\RuleEngine\Operator\StringContainsInsensitive;
 use D6N\RuleEngine\Operator\StringDoesNotContain;
 use D6N\RuleEngine\Operator\StringDoesNotContainInsensitive;
+use D6N\RuleEngine\Operator\WithinLast;
 use D6N\RuleEngine\Proposition;
 use D6N\RuleEngine\RuleBuilder;
 use D6N\RuleEngine\Variable as BaseVariable;
@@ -62,6 +81,9 @@ use D6N\RuleEngine\VariableOperand;
  * @method GreaterThanOrEqualTo greaterThanOrEqualTo(mixed $value)
  * @method LessThan             lessThan(mixed $value)
  * @method LessThanOrEqualTo    lessThanOrEqualTo(mixed $value)
+ * @method Between              between(mixed $min, mixed $max)
+ * @method In                   in(mixed $list)
+ * @method NotIn                notIn(mixed $list)
  *
  * Strings:
  * @method StringContains                  stringContains(mixed $value)
@@ -72,6 +94,12 @@ use D6N\RuleEngine\VariableOperand;
  * @method StartsWithInsensitive           startsWithInsensitive(mixed $value)
  * @method EndsWith                        endsWith(mixed $value)
  * @method EndsWithInsensitive             endsWithInsensitive(mixed $value)
+ * @method Matches                         matches(mixed $pattern)
+ * @method ContainsAny                     containsAny(mixed $strings)
+ * @method ContainsAll                     containsAll(mixed $strings)
+ * @method StartsWithAny                   startsWithAny(mixed $prefixes)
+ * @method EndsWithAny                     endsWithAny(mixed $suffixes)
+ * @method self                            length()
  *
  * Math:
  * @method self add(mixed $value)
@@ -83,6 +111,11 @@ use D6N\RuleEngine\VariableOperand;
  * @method self negate()
  * @method self ceil()
  * @method self floor()
+ * @method self abs()
+ * @method self round(mixed $precision)
+ * @method self sum()
+ * @method self avg()
+ * @method self count()
  *
  * Sets:
  * @method self                 union(mixed ...$values)
@@ -95,6 +128,21 @@ use D6N\RuleEngine\VariableOperand;
  * @method SetDoesNotContain    setDoesNotContain(mixed $value)
  * @method ContainsSubset       containsSubset(mixed $value)
  * @method DoesNotContainSubset doesNotContainSubset(mixed $value)
+ *
+ * Types:
+ * @method IsNull    isNull()
+ * @method IsEmpty   isEmpty()
+ * @method IsString  isString()
+ * @method IsNumeric isNumeric()
+ * @method IsArray   isArray()
+ * @method IsBool    isBool()
+ *
+ * Dates (see Context::now() for "now"):
+ * @method Before       before(mixed $date)
+ * @method After        after(mixed $date)
+ * @method BetweenDates betweenDates(mixed $start, mixed $end)
+ * @method WithinLast   withinLast(mixed $interval)
+ * @method OlderThan    olderThan(mixed $interval)
  *
  * @author Justin Hileman <justin@justinhileman.info>
  *

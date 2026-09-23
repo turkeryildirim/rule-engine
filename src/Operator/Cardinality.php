@@ -24,6 +24,9 @@ enum Cardinality
     /** Exactly two operands. */
     case Binary;
 
+    /** Exactly three operands. */
+    case Ternary;
+
     /** One or more operands. */
     case Multiple;
 
@@ -35,6 +38,7 @@ enum Cardinality
         return match ($this) {
             self::Unary    => $count < 1,
             self::Binary   => $count < 2,
+            self::Ternary  => $count < 3,
             self::Multiple => true,
         };
     }
@@ -47,6 +51,7 @@ enum Cardinality
         return match ($this) {
             self::Unary    => 1 === $count,
             self::Binary   => 2 === $count,
+            self::Ternary  => 3 === $count,
             self::Multiple => $count > 0,
         };
     }
@@ -56,6 +61,7 @@ enum Cardinality
         return match ($this) {
             self::Unary    => 'exactly 1 operand',
             self::Binary   => 'exactly 2 operands',
+            self::Ternary  => 'exactly 3 operands',
             self::Multiple => 'at least 1 operand',
         };
     }

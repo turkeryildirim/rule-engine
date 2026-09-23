@@ -33,6 +33,9 @@ final class OperatorRegistry
         'greaterThanOrEqualTo' => Op\GreaterThanOrEqualTo::class,
         'lessThan'             => Op\LessThan::class,
         'lessThanOrEqualTo'    => Op\LessThanOrEqualTo::class,
+        'between'              => Op\Between::class,
+        'in'                   => Op\In::class,
+        'notIn'                => Op\NotIn::class,
 
         // Strings
         'stringContains'                  => Op\StringContains::class,
@@ -43,6 +46,20 @@ final class OperatorRegistry
         'startsWithInsensitive'           => Op\StartsWithInsensitive::class,
         'endsWith'                        => Op\EndsWith::class,
         'endsWithInsensitive'             => Op\EndsWithInsensitive::class,
+        'matches'                         => Op\Matches::class,
+        'containsAny'                     => Op\ContainsAny::class,
+        'containsAll'                     => Op\ContainsAll::class,
+        'startsWithAny'                   => Op\StartsWithAny::class,
+        'endsWithAny'                     => Op\EndsWithAny::class,
+        'length'                          => Op\Length::class,
+
+        // Types
+        'isNull'    => Op\IsNull::class,
+        'isEmpty'   => Op\IsEmpty::class,
+        'isString'  => Op\IsString::class,
+        'isNumeric' => Op\IsNumeric::class,
+        'isArray'   => Op\IsArray::class,
+        'isBool'    => Op\IsBool::class,
 
         // Math
         'add'          => Op\Addition::class,
@@ -54,6 +71,18 @@ final class OperatorRegistry
         'negate'       => Op\Negation::class,
         'ceil'         => Op\Ceil::class,
         'floor'        => Op\Floor::class,
+        'abs'          => Op\Absolute::class,
+        'round'        => Op\Round::class,
+        'sum'          => Op\Sum::class,
+        'avg'          => Op\Average::class,
+        'count'        => Op\Count::class,
+
+        // Dates
+        'before'       => Op\Before::class,
+        'after'        => Op\After::class,
+        'betweenDates' => Op\BetweenDates::class,
+        'withinLast'   => Op\WithinLast::class,
+        'olderThan'    => Op\OlderThan::class,
 
         // Sets
         'union'                => Op\Union::class,
@@ -68,10 +97,16 @@ final class OperatorRegistry
         'doesNotContainSubset' => Op\DoesNotContainSubset::class,
 
         // Logic (built with RuleBuilder, not the fluent Variable interface)
-        'logicalAnd' => Op\LogicalAnd::class,
-        'logicalOr'  => Op\LogicalOr::class,
-        'logicalNot' => Op\LogicalNot::class,
-        'logicalXor' => Op\LogicalXor::class,
+        'logicalAnd'     => Op\LogicalAnd::class,
+        'logicalOr'      => Op\LogicalOr::class,
+        'logicalNot'     => Op\LogicalNot::class,
+        'logicalXor'     => Op\LogicalXor::class,
+        'logicalImplies' => Op\LogicalImplies::class,
+        'logicalNand'    => Op\LogicalNand::class,
+        'logicalNor'     => Op\LogicalNor::class,
+        'atLeast'        => Op\AtLeast::class,
+        'atMost'         => Op\AtMost::class,
+        'exactly'        => Op\Exactly::class,
     ];
 
     /** @var array<string, class-string<Proposition|VariableOperand>> */

@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
-use D6N\RuleEngine\Exception\ArithmeticException;
 use D6N\RuleEngine\Exception\DivisionByZeroException;
 use D6N\RuleEngine\Exception\InvalidOperandException;
+use D6N\RuleEngine\Internal\Coerce;
 
 /**
  * A Ruler Value.
@@ -90,7 +90,7 @@ class Value implements \Stringable
      *
      * @param Value $value Value object to compare against
      *
-     * @throws \RuntimeException if either value is not a string (or null)
+     * @throws InvalidOperandException if either value is not a string (or null)
      */
     public function stringContains(self $value): bool
     {
@@ -100,17 +100,17 @@ class Value implements \Stringable
     }
 
     /**
-     * Case-insensitive contains comparison. A null value contains nothing.
+     * Case-insensitive contains comparison (Unicode, see Coerce::foldCase()). A null value contains nothing.
      *
      * @param Value $value Value object to compare against
      *
-     * @throws \RuntimeException if either value is not a string (or null)
+     * @throws InvalidOperandException if either value is not a string (or null)
      */
     public function stringContainsInsensitive(self $value): bool
     {
-        [$haystack, $needle] = self::stringOperands($this, $value);
+        [$haystack, $needle] = self::stringOperands($this, $value, true);
 
-        return null !== $haystack && null !== $needle && false !== \stripos($haystack, $needle);
+        return null !== $haystack && null !== $needle && \str_contains($haystack, $needle);
     }
 
     /**
@@ -138,7 +138,7 @@ class Value implements \Stringable
      */
     public function add(self $value): int|float
     {
-        return self::number($this->value) + self::number($value->getValue());
+        return Coerce::number($this->value) + Coerce::number($value->getValue());
     }
 
     /**
@@ -146,8 +146,8 @@ class Value implements \Stringable
      */
     public function divide(self $value): int|float
     {
-        $dividend = self::number($this->value);
-        $divisor = self::nonZero(self::number($value->getValue()));
+        $dividend = Coerce::number($this->value);
+        $divisor = self::nonZero(Coerce::number($value->getValue()));
 
         return $dividend / $divisor;
     }
@@ -159,8 +159,8 @@ class Value implements \Stringable
      */
     public function modulo(self $value): int|float
     {
-        $dividend = self::number($this->value);
-        $divisor = self::nonZero(self::number($value->getValue()));
+        $dividend = Coerce::number($this->value);
+        $divisor = self::nonZero(Coerce::number($value->getValue()));
 
         if (\is_int($dividend) && \is_int($divisor)) {
             return $dividend % $divisor;
@@ -174,7 +174,7 @@ class Value implements \Stringable
      */
     public function multiply(self $value): int|float
     {
-        return self::number($this->value) * self::number($value->getValue());
+        return Coerce::number($this->value) * Coerce::number($value->getValue());
     }
 
     /**
@@ -182,7 +182,7 @@ class Value implements \Stringable
      */
     public function subtract(self $value): int|float
     {
-        return self::number($this->value) - self::number($value->getValue());
+        return Coerce::number($this->value) - Coerce::number($value->getValue());
     }
 
     /**
@@ -190,7 +190,7 @@ class Value implements \Stringable
      */
     public function negate(): int|float
     {
-        return -self::number($this->value);
+        return -Coerce::number($this->value);
     }
 
     /**
@@ -198,7 +198,7 @@ class Value implements \Stringable
      */
     public function ceil(): int|float
     {
-        return self::toIntIfExact(\ceil(self::number($this->value)));
+        return self::toIntIfExact(\ceil(Coerce::number($this->value)));
     }
 
     /**
@@ -206,7 +206,7 @@ class Value implements \Stringable
      */
     public function floor(): int|float
     {
-        return self::toIntIfExact(\floor(self::number($this->value)));
+        return self::toIntIfExact(\floor(Coerce::number($this->value)));
     }
 
     /**
@@ -214,8 +214,8 @@ class Value implements \Stringable
      */
     public function exponentiate(self $value): int|float
     {
-        $base = self::number($this->value);
-        $exponent = self::number($value->getValue());
+        $base = Coerce::number($this->value);
+        $exponent = Coerce::number($value->getValue());
 
         if (self::isZero($base) && $exponent < 0) {
             throw new DivisionByZeroException('Division by zero');
@@ -230,17 +230,13 @@ class Value implements \Stringable
      * @param Value $value       Value object to compare against
      * @param bool  $insensitive Perform a case-insensitive comparison (default: false)
      *
-     * @throws \RuntimeException if either value is not a string (or null)
+     * @throws InvalidOperandException if either value is not a string (or null)
      */
     public function startsWith(self $value, bool $insensitive = false): bool
     {
-        [$haystack, $prefix] = self::stringOperands($this, $value);
+        [$haystack, $prefix] = self::stringOperands($this, $value, $insensitive);
 
-        if (null === $haystack || null === $prefix || '' === $prefix || \strlen($prefix) > \strlen($haystack)) {
-            return false;
-        }
-
-        return 0 === \substr_compare($haystack, $prefix, 0, \strlen($prefix), $insensitive);
+        return null !== $haystack && null !== $prefix && '' !== $prefix && \str_starts_with($haystack, $prefix);
     }
 
     /**
@@ -249,33 +245,13 @@ class Value implements \Stringable
      * @param Value $value       Value object to compare against
      * @param bool  $insensitive Perform a case-insensitive comparison (default: false)
      *
-     * @throws \RuntimeException if either value is not a string (or null)
+     * @throws InvalidOperandException if either value is not a string (or null)
      */
     public function endsWith(self $value, bool $insensitive = false): bool
     {
-        [$haystack, $suffix] = self::stringOperands($this, $value);
+        [$haystack, $suffix] = self::stringOperands($this, $value, $insensitive);
 
-        if (null === $haystack || null === $suffix || '' === $suffix || \strlen($suffix) > \strlen($haystack)) {
-            return false;
-        }
-
-        return 0 === \substr_compare($haystack, $suffix, -\strlen($suffix), \strlen($suffix), $insensitive);
-    }
-
-    /**
-     * @throws \RuntimeException if the value is not numeric
-     */
-    private static function number(mixed $value): int|float
-    {
-        if (\is_int($value) || \is_float($value)) {
-            return $value;
-        }
-
-        if (\is_string($value) && \is_numeric($value)) {
-            return +$value;
-        }
-
-        throw new ArithmeticException('Arithmetic: values must be numeric');
+        return null !== $haystack && null !== $suffix && '' !== $suffix && \str_ends_with($haystack, $suffix);
     }
 
     /**
@@ -301,26 +277,18 @@ class Value implements \Stringable
     }
 
     /**
-     * Strings pass through; ints, floats and Stringable objects are converted; null stays null.
+     * Both values as strings (null stays null), case-folded when $insensitive.
      *
      * @return array{?string, ?string}
      *
-     * @throws \RuntimeException if either value cannot be used as a string
+     * @throws InvalidOperandException if either value cannot be used as a string
      */
-    private static function stringOperands(self $left, self $right): array
+    private static function stringOperands(self $left, self $right, bool $insensitive = false): array
     {
-        return [self::string($left->getValue()), self::string($right->getValue())];
-    }
+        $strings = [Coerce::string($left->getValue()), Coerce::string($right->getValue())];
 
-    /**
-     * @throws \RuntimeException if the value cannot be used as a string
-     */
-    private static function string(mixed $value): ?string
-    {
-        return match (true) {
-            null === $value, \is_string($value)                               => $value,
-            \is_int($value), \is_float($value), $value instanceof \Stringable => (string) $value,
-            default                                                           => throw new InvalidOperandException('String operations: values must be strings'),
-        };
+        return $insensitive
+            ? \array_map(static fn (?string $s): ?string => null === $s ? null : Coerce::foldCase($s), $strings)
+            : $strings;
     }
 }

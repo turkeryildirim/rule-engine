@@ -15,7 +15,13 @@ namespace D6N\RuleEngine;
 
 use D6N\RuleEngine\Exception\InvalidNameException;
 use D6N\RuleEngine\Exception\UnknownOperatorException;
+use D6N\RuleEngine\Operator\AtLeast;
+use D6N\RuleEngine\Operator\AtMost;
+use D6N\RuleEngine\Operator\Exactly;
 use D6N\RuleEngine\Operator\LogicalAnd;
+use D6N\RuleEngine\Operator\LogicalImplies;
+use D6N\RuleEngine\Operator\LogicalNand;
+use D6N\RuleEngine\Operator\LogicalNor;
 use D6N\RuleEngine\Operator\LogicalNot;
 use D6N\RuleEngine\Operator\LogicalOr;
 use D6N\RuleEngine\Operator\LogicalXor;
@@ -104,6 +110,54 @@ class RuleBuilder implements \ArrayAccess
     public function logicalXor(Proposition ...$props): LogicalXor
     {
         return new LogicalXor(\array_values($props));
+    }
+
+    /**
+     * Create a logical implication: false only when $if holds and $then does not.
+     */
+    public function logicalImplies(Proposition $if, Proposition $then): LogicalImplies
+    {
+        return new LogicalImplies([$if, $then]);
+    }
+
+    /**
+     * Create a logical NAND: true unless every proposition holds.
+     */
+    public function logicalNand(Proposition ...$props): LogicalNand
+    {
+        return new LogicalNand(\array_values($props));
+    }
+
+    /**
+     * Create a logical NOR: true when no proposition holds.
+     */
+    public function logicalNor(Proposition ...$props): LogicalNor
+    {
+        return new LogicalNor(\array_values($props));
+    }
+
+    /**
+     * True when at least $count of the propositions hold.
+     */
+    public function atLeast(int $count, Proposition ...$props): AtLeast
+    {
+        return new AtLeast($count, \array_values($props));
+    }
+
+    /**
+     * True when at most $count of the propositions hold.
+     */
+    public function atMost(int $count, Proposition ...$props): AtMost
+    {
+        return new AtMost($count, \array_values($props));
+    }
+
+    /**
+     * True when exactly $count of the propositions hold.
+     */
+    public function exactly(int $count, Proposition ...$props): Exactly
+    {
+        return new Exactly($count, \array_values($props));
     }
 
     /**
