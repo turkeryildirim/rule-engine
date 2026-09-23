@@ -109,4 +109,11 @@ class VariablePropertyTest extends TestCase
 
         self::assertSame('from property', new VariableProperty($parent, 'name')->prepareValue(new Context())->getValue());
     }
+
+    public function testArrayAccessOffsetsAreResolved(): void
+    {
+        $parent = new Variable('object', new \ArrayObject(['key' => 'from offset']));
+
+        self::assertSame('from offset', new VariableProperty($parent, 'key')->prepareValue(new Context())->getValue());
+    }
 }

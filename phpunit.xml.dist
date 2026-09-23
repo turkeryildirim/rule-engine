@@ -20,6 +20,12 @@
         </testsuite>
     </testsuites>
 
+    <extensions>
+        <bootstrap class="Turker\PHPUnitCoverageReporter\JsonReporterExtension">
+            <parameter name="outputFile" value="build/coverage.json"/>
+        </bootstrap>
+    </extensions>
+
     <source>
         <include>
             <directory suffix=".php">./src/</directory>

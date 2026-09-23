@@ -205,4 +205,24 @@ class VariableTest extends TestCase
         self::assertFalse($var->offsetExists('baz'));
         self::assertTrue($var->offsetExists('qux'));
     }
+
+    public function testRemainingFluentOperators(): void
+    {
+        $rb = new RuleBuilder();
+        $context = new Context(['n' => 1, 'set' => [3, 1, 2]]);
+
+        self::assertTrue($rb['n']->sameAs('1')->evaluate($context));
+        self::assertFalse($rb['n']->notSameAs(1.0)->evaluate($context));
+        self::assertSame(1, $rb['set']->min()->prepareValue($context)->getValue());
+        self::assertSame(3, $rb['set']->max()->prepareValue($context)->getValue());
+        self::assertTrue($rb['set']->doesNotContainSubset([4])->evaluate($context));
+    }
+
+    public function testPropertyDefaultsCanBeAssigned(): void
+    {
+        $rb = new RuleBuilder();
+        $rb['user']->offsetSet('roles', ['anonymous']);
+
+        self::assertSame(['anonymous'], $rb['user']['roles']->prepareValue(new Context(['user' => null]))->getValue());
+    }
 }

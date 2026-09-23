@@ -290,4 +290,13 @@ class ContextTest extends TestCase
 
         $context->offsetSet(new \stdClass(), 'value');
     }
+
+    public function testUnsettingAnUndefinedFactIsANoOp(): void
+    {
+        $context = new Context(['kept' => 1]);
+
+        $context->offsetUnset('missing');
+
+        self::assertSame(['kept'], $context->keys());
+    }
 }

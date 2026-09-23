@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 // Coding standard for src/ and tests/, checked in CI via `composer cs`.
 $finder = (new PhpCsFixer\Finder())
-    ->in([__DIR__.'/src', __DIR__.'/tests'])
+    ->in([__DIR__.'/src', __DIR__.'/tests', __DIR__.'/bin'])
     ->append([__FILE__]);
 
 return (new PhpCsFixer\Config())

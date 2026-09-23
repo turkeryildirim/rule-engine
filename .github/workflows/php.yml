@@ -24,7 +24,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-version }}
-        coverage: none
+        coverage: xdebug
 
     - name: Validate composer.json
       run: composer validate --strict
@@ -46,5 +46,5 @@ jobs:
     - name: Static analysis
       run: composer stan
 
-    - name: Run test suite
-      run: composer test
+    - name: Run test suite with coverage (100% lines required)
+      run: composer coverage

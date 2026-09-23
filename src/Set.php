@@ -124,21 +124,25 @@ class Set extends Value implements \Countable
     /**
      * Numeric minimum value in this Set, or null if the Set is empty.
      *
-     * @throws \RuntimeException if this Set contains non-numeric members
+     * @throws ArithmeticException if this Set contains non-numeric members
      */
     public function min(): int|float|string|null
     {
-        return [] === $this->members ? null : \min($this->numericMembers('min'));
+        $numbers = $this->numericMembers('min');
+
+        return [] === $numbers ? null : \min($numbers);
     }
 
     /**
      * Numeric maximum value in this Set, or null if the Set is empty.
      *
-     * @throws \RuntimeException if this Set contains non-numeric members
+     * @throws ArithmeticException if this Set contains non-numeric members
      */
     public function max(): int|float|string|null
     {
-        return [] === $this->members ? null : \max($this->numericMembers('max'));
+        $numbers = $this->numericMembers('max');
+
+        return [] === $numbers ? null : \max($numbers);
     }
 
     /**
@@ -156,7 +160,7 @@ class Set extends Value implements \Countable
     }
 
     /**
-     * @return non-empty-list<int|float|string>
+     * @return list<int|float|string>
      *
      * @throws \RuntimeException if this Set contains non-numeric members
      */
@@ -169,8 +173,6 @@ class Set extends Value implements \Countable
             }
             $numbers[] = $member;
         }
-
-        \assert([] !== $numbers);
 
         return $numbers;
     }

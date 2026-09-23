@@ -33,7 +33,8 @@
         "phpstan/phpstan": "^2.2",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^13.3"
+        "phpunit/phpunit": "^13.3",
+        "turkeryildirim/phpunit-json-coverage-report": "^1.1"
     },
     "autoload": {
         "psr-4": {
@@ -47,13 +48,18 @@
     },
     "scripts": {
         "test": "phpunit",
+        "coverage": [
+            "@putenv XDEBUG_MODE=coverage",
+            "@php -d memory_limit=2G vendor/bin/phpunit --coverage-text=build/coverage.txt --path-coverage",
+            "@php bin/check-coverage.php"
+        ],
         "stan": "phpstan analyse --memory-limit=1G",
         "cs": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --dry-run --diff",
         "cs-fix": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix",
         "check": [
             "@cs",
             "@stan",
-            "@test"
+            "@coverage"
         ]
     },
     "config": {

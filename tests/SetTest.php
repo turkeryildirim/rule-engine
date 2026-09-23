@@ -96,4 +96,16 @@ class SetTest extends TestCase
     {
         self::assertSame(['a', 'b'], new Set(['x' => 'a', 'y' => 'b'])->getValue());
     }
+
+    public function testStringRepresentationIgnoresOrderAndDuplicates(): void
+    {
+        self::assertSame((string) new Set([1, 2, 2]), (string) new Set([2, 1]));
+        self::assertNotSame((string) new Set([1, 2]), (string) new Set(['1', '2']));
+    }
+
+    public function testMinAndMaxOfAnEmptySetAreNull(): void
+    {
+        self::assertNull(new Set([])->min());
+        self::assertNull(new Set(null)->max());
+    }
 }

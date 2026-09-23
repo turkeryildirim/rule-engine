@@ -147,4 +147,12 @@ class ValueTest extends TestCase
     {
         self::assertSame(1.0e30, new Value(1.0e30)->ceil());
     }
+
+    public function testStringRepresentation(): void
+    {
+        $object = new \stdClass();
+
+        self::assertSame(\spl_object_hash($object), (string) new Value($object));
+        self::assertSame(\serialize([1, 'a']), (string) new Value([1, 'a']));
+    }
 }
