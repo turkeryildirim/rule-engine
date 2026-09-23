@@ -48,6 +48,7 @@
     "scripts": {
         "test": "phpunit",
         "coverage": [
+            "@php -r \"is_dir('build') || mkdir('build');\"",
             "@putenv XDEBUG_MODE=coverage",
             "@php -d memory_limit=2G vendor/bin/phpunit --coverage-text=build/coverage.txt --path-coverage",
             "@php bin/check-coverage.php"
