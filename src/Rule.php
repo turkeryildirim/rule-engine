@@ -30,10 +30,29 @@ class Rule implements Proposition
      *
      * @param Proposition   $condition Propositional condition for this Rule
      * @param callable|null $action    Called with the Context when the Rule is executed and its condition holds
+     * @param string|null   $name      Identifies the Rule in error messages, explanations and exported JSON
      */
-    public function __construct(protected readonly Proposition $condition, ?callable $action = null)
-    {
+    public function __construct(
+        protected readonly Proposition $condition,
+        ?callable $action = null,
+        protected readonly ?string $name = null,
+    ) {
         $this->action = null === $action ? null : $action(...);
+    }
+
+    public function getCondition(): Proposition
+    {
+        return $this->condition;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function hasAction(): bool
+    {
+        return null !== $this->action;
     }
 
     /**
@@ -50,15 +69,23 @@ class Rule implements Proposition
     /**
      * Execute the Rule with the given Context.
      *
-     * The Rule will be evaluated, and if successful, its action is called with
-     * the Context as its only argument.
+     * The Rule is evaluated, and if its condition holds, its action (if any)
+     * is called with the Context as its only argument.
      *
      * @param Context $context Context with which to execute this Rule
+     *
+     * @return bool whether the condition held
      */
-    public function execute(Context $context): void
+    public function execute(Context $context): bool
     {
-        if ($this->evaluate($context) && null !== $this->action) {
+        if (!$this->evaluate($context)) {
+            return false;
+        }
+
+        if (null !== $this->action) {
             ($this->action)($context);
         }
+
+        return true;
     }
 }

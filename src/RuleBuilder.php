@@ -41,12 +41,13 @@ class RuleBuilder implements \ArrayAccess
     /**
      * Create a Rule with the given propositional condition.
      *
-     * @param Proposition $condition Propositional condition for this Rule
-     * @param callable    $action    Action (callable) to take upon successful Rule execution (default: null)
+     * @param Proposition   $condition Propositional condition for this Rule
+     * @param callable|null $action    Called with the Context when the Rule is executed and its condition holds
+     * @param string|null   $name      Identifies the Rule in error messages, explanations and exported JSON
      */
-    public function create(Proposition $condition, ?callable $action = null): Rule
+    public function create(Proposition $condition, ?callable $action = null, ?string $name = null): Rule
     {
-        return new Rule($condition, $action);
+        return new Rule($condition, $action, $name);
     }
 
     /**

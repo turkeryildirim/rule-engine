@@ -53,4 +53,23 @@ class RuleTest extends TestCase
 
         new Rule(new TrueProposition(), 'this is not callable'); // @phpstan-ignore argument.type, new.resultUnused (invalid input on purpose)
     }
+
+    public function testExposesItsParts(): void
+    {
+        $condition = new TrueProposition();
+        $named = new Rule($condition, new CallCounter(), 'named');
+        $anonymous = new Rule($condition);
+
+        self::assertSame($condition, $named->getCondition());
+        self::assertSame('named', $named->getName());
+        self::assertTrue($named->hasAction());
+        self::assertNull($anonymous->getName());
+        self::assertFalse($anonymous->hasAction());
+    }
+
+    public function testExecuteReportsWhetherTheConditionHeld(): void
+    {
+        self::assertTrue(new Rule(new TrueProposition())->execute(new Context()));
+        self::assertFalse(new Rule(new FalseProposition(), new CallCounter())->execute(new Context()));
+    }
 }
