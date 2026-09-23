@@ -114,6 +114,9 @@ final class RuleSerializer
         $set = new RuleSet();
         foreach ($rules as $i => $item) {
             $path = "rules[$i]";
+            if (!\is_array($item)) {
+                throw new SerializationException('A rule must be an object', $path);
+            }
             $set->addRule($this->importRule($item, $path, $actions), self::priority($item, $path));
         }
 
@@ -386,11 +389,13 @@ final class RuleSerializer
     }
 
     /**
+     * @param array<mixed> $item
+     *
      * @throws SerializationException if the priority is not an integer
      */
-    private static function priority(mixed $item, string $path): int
+    private static function priority(array $item, string $path): int
     {
-        $priority = \is_array($item) ? ($item['priority'] ?? 0) : 0;
+        $priority = $item['priority'] ?? 0;
         if (!\is_int($priority)) {
             throw new SerializationException('"priority" must be an integer', $path.'.priority');
         }

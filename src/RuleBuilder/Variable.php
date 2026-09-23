@@ -241,14 +241,13 @@ class Variable extends BaseVariable implements \ArrayAccess
     public function __call(string $name, array $args): Proposition|self
     {
         $class = $this->ruleBuilder->findOperator($name);
-        $op = new $class($this, ...\array_values(\array_map($this->asVariable(...), $args)));
+        $operands = \array_map(
+            static fn (mixed $arg): BaseVariable => $arg instanceof BaseVariable ? $arg : new BaseVariable(null, $arg),
+            \array_values($args),
+        );
+        $op = new $class($this, ...$operands);
 
         return $op instanceof VariableOperand ? new self($this->ruleBuilder, null, $op) : $op;
-    }
-
-    private function asVariable(mixed $variable): BaseVariable
-    {
-        return $variable instanceof BaseVariable ? $variable : new BaseVariable(null, $variable);
     }
 
     /**

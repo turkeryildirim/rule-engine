@@ -108,4 +108,30 @@ class SetTest extends TestCase
         self::assertNull(new Set([])->min());
         self::assertNull(new Set(null)->max());
     }
+
+    public function testSetsAndValuesCanBeMembers(): void
+    {
+        $inner = new Set([2, 1]);
+        $set = new Set([$inner, new Value('x'), [1, 2]]);
+
+        self::assertCount(2, $set, 'the Set member and the array [1, 2] are the same member');
+        self::assertTrue($set->setContains(new Value('x')));
+        self::assertTrue($set->setContains(new Value([1, 2])));
+    }
+
+    public function testResourcesAreMembersByIdentity(): void
+    {
+        $a = \fopen('php://memory', 'r');
+        $b = \fopen('php://memory', 'r');
+        self::assertIsResource($a);
+        self::assertIsResource($b);
+
+        $set = new Set([$a, $a, $b]);
+
+        self::assertCount(2, $set);
+        self::assertTrue($set->setContains(new Value($a)));
+
+        \fclose($a);
+        \fclose($b);
+    }
 }

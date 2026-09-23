@@ -116,4 +116,12 @@ class VariablePropertyTest extends TestCase
 
         self::assertSame('from offset', new VariableProperty($parent, 'key')->prepareValue(new Context())->getValue());
     }
+
+    public function testValuesAreReturnedAsTheyAre(): void
+    {
+        $value = new \D6N\RuleEngine\Value(5);
+        $parent = new Variable('object', ['key' => $value]);
+
+        self::assertSame($value, new VariableProperty($parent, 'key')->prepareValue(new Context()));
+    }
 }

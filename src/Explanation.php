@@ -111,7 +111,7 @@ final readonly class Explanation implements \JsonSerializable, \Stringable
         return match (true) {
             \is_float($value) && !\is_finite($value) => (string) $value,
             null === $value, \is_scalar($value)      => $value,
-            \is_array($value)                        => \array_map(self::describe(...), $value),
+            \is_array($value)                        => \array_map(static fn (mixed $item): mixed => self::describe($item), $value),
             $value instanceof \DateTimeInterface     => $value->format(\DATE_ATOM),
             default                                  => \get_debug_type($value),
         };

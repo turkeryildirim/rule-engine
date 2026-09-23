@@ -299,4 +299,24 @@ class ContextTest extends TestCase
 
         self::assertSame(['kept'], $context->keys());
     }
+
+    public function testRawReturnsTheDefinitionOfAResolvedSharedFact(): void
+    {
+        $context = new Context();
+        $definition = static fn (): Fact => new Fact();
+        $context->offsetSet('shared', $context->share($definition));
+
+        $resolved = $context->offsetGet('shared');
+
+        self::assertInstanceOf(Fact::class, $resolved);
+        self::assertSame($definition, $context->raw('shared'));
+    }
+
+    public function testUndefinedNonScalarNamesAreDescribedByType(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Fact "stdClass" is not defined.');
+
+        new Context()->offsetGet(new \stdClass());
+    }
 }

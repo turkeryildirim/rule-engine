@@ -271,4 +271,16 @@ class RuleSerializerTest extends TestCase
         self::assertTrue($inner->hasAction());
         self::assertFalse($imported->hasAction());
     }
+
+    public function testSingleRulesAndNestedRulesMustBeObjects(): void
+    {
+        foreach (['{"version": 1, "rule": 1}', '{"version": 1, "rule": {"condition": {"op": "logicalNot", "operands": [{"rule": 1}]}}}'] as $json) {
+            try {
+                new RuleSerializer()->ruleFromJson($json);
+                self::fail('Expected an exception for '.$json);
+            } catch (SerializationException $e) {
+                self::assertStringStartsWith('A rule must be an object', $e->getMessage());
+            }
+        }
+    }
 }

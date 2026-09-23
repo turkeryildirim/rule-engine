@@ -181,4 +181,11 @@ class ExplanationTest extends TestCase
 
         self::assertSame("value: \"caf\u{FFFD}\"", (string) $explanation);
     }
+
+    public function testScalarsAreDescribedAsTheyAre(): void
+    {
+        $explanation = new Explanation('', 'value', null, [1.5, 2, true, null, 'x']);
+
+        self::assertSame([1.5, 2, true, null, 'x'], $explanation->toArray()['result']);
+    }
 }

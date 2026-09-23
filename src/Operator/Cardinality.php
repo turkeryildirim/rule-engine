@@ -30,17 +30,18 @@ enum Cardinality
     /** One or more operands. */
     case Multiple;
 
+    /** Fewest operands, by case name. */
+    private const array MINIMUM = ['Unary' => 1, 'Binary' => 2, 'Ternary' => 3, 'Multiple' => 1];
+
+    /** Most operands, by case name. */
+    private const array MAXIMUM = ['Unary' => 1, 'Binary' => 2, 'Ternary' => 3, 'Multiple' => \PHP_INT_MAX];
+
     /**
      * Whether an operator already holding $count operands can accept another one.
      */
     public function acceptsAnother(int $count): bool
     {
-        return match ($this) {
-            self::Unary    => $count < 1,
-            self::Binary   => $count < 2,
-            self::Ternary  => $count < 3,
-            self::Multiple => true,
-        };
+        return $count < self::MAXIMUM[$this->name];
     }
 
     /**
@@ -48,21 +49,21 @@ enum Cardinality
      */
     public function isSatisfiedBy(int $count): bool
     {
-        return match ($this) {
-            self::Unary    => 1 === $count,
-            self::Binary   => 2 === $count,
-            self::Ternary  => 3 === $count,
-            self::Multiple => $count > 0,
-        };
+        return $count >= self::MINIMUM[$this->name] && $count <= self::MAXIMUM[$this->name];
     }
 
+    /**
+     * E.g. "exactly 2 operands" or "at least 1 operand".
+     */
     public function describe(): string
     {
-        return match ($this) {
-            self::Unary    => 'exactly 1 operand',
-            self::Binary   => 'exactly 2 operands',
-            self::Ternary  => 'exactly 3 operands',
-            self::Multiple => 'at least 1 operand',
-        };
+        $minimum = self::MINIMUM[$this->name];
+
+        return \sprintf(
+            '%s %d operand%s',
+            $minimum === self::MAXIMUM[$this->name] ? 'exactly' : 'at least',
+            $minimum,
+            1 === $minimum ? '' : 's',
+        );
     }
 }

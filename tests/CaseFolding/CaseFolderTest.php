@@ -287,4 +287,38 @@ class CaseFolderTest extends TestCase
         self::assertTrue($rb['v']->startsWithInsensitive('arbol')->evaluate(new Context(['v' => 'ÁRBOLES'], language: 'es-ES')));
         self::assertFalse($rb['v']->endsWithInsensitive('ano')->evaluate(new Context(['v' => 'FELIZ AÑO'], language: 'es')));
     }
+
+    /**
+     * Normalization needs ext-intl (or a Normalizer polyfill). Without either the
+     * Unicode rules still apply, only composed and decomposed accents stop matching.
+     * Runs in a PHP process without intl and without vendor/.
+     */
+    public function testWorksWithoutIntl(): void
+    {
+        $code = <<<'PHP'
+            // Only this library: vendor/ may bring a Normalizer polyfill
+            spl_autoload_register(static function (string $class): void {
+                $file = 'src/'.str_replace('\\', '/', substr($class, strlen('D6N\\RuleEngine\\'))).'.php';
+                if (is_file($file)) {
+                    require $file;
+                }
+            });
+            $folder = new D6N\RuleEngine\CaseFolding\Utf8CaseFolder();
+            echo json_encode([
+                extension_loaded('intl') || class_exists('Normalizer'),
+                $folder->fold('STRASSE') === $folder->fold('Straße'),
+                $folder->fold('café') === $folder->fold("CAFE\u{0301}"),
+            ]);
+            PHP;
+        // -n drops php.ini, and with it shared extensions such as intl; startup warnings go to stderr
+        $command = \sprintf('%s -n -d extension=mbstring -d display_startup_errors=0 -d display_errors=stderr -r %s 2>/dev/null', \escapeshellarg(\PHP_BINARY), \escapeshellarg($code));
+
+        \exec($command, $output, $status);
+        $result = \json_decode(\implode('', $output), true);
+
+        if (0 !== $status || !\is_array($result) || true === $result[0]) {
+            self::markTestSkipped('Needs a PHP binary that can run with mbstring and without intl.');
+        }
+        self::assertSame([false, true, false], $result);
+    }
 }
