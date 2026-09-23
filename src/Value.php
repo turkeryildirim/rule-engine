@@ -13,6 +13,10 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
+use D6N\RuleEngine\Exception\ArithmeticException;
+use D6N\RuleEngine\Exception\DivisionByZeroException;
+use D6N\RuleEngine\Exception\InvalidOperandException;
+
 /**
  * A Ruler Value.
  *
@@ -214,7 +218,7 @@ class Value implements \Stringable
         $exponent = self::number($value->getValue());
 
         if (self::isZero($base) && $exponent < 0) {
-            throw new \RuntimeException('Division by zero');
+            throw new DivisionByZeroException('Division by zero');
         }
 
         return $base ** $exponent;
@@ -271,7 +275,7 @@ class Value implements \Stringable
             return +$value;
         }
 
-        throw new \RuntimeException('Arithmetic: values must be numeric');
+        throw new ArithmeticException('Arithmetic: values must be numeric');
     }
 
     /**
@@ -280,7 +284,7 @@ class Value implements \Stringable
     private static function nonZero(int|float $divisor): int|float
     {
         if (self::isZero($divisor)) {
-            throw new \RuntimeException('Division by zero');
+            throw new DivisionByZeroException('Division by zero');
         }
 
         return $divisor;
@@ -316,7 +320,7 @@ class Value implements \Stringable
         return match (true) {
             null === $value, \is_string($value)                               => $value,
             \is_int($value), \is_float($value), $value instanceof \Stringable => (string) $value,
-            default                                                           => throw new \RuntimeException('String operations: values must be strings'),
+            default                                                           => throw new InvalidOperandException('String operations: values must be strings'),
         };
     }
 }

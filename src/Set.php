@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
+use D6N\RuleEngine\Exception\ArithmeticException;
+
 /**
  * A Ruler Set.
  *
@@ -163,7 +165,7 @@ class Set extends Value implements \Countable
         $numbers = [];
         foreach ($this->members as $member) {
             if (!\is_numeric($member)) {
-                throw new \RuntimeException($operation.': all values must be numeric');
+                throw new ArithmeticException($operation.': all values must be numeric');
             }
             $numbers[] = $member;
         }

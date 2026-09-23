@@ -28,6 +28,11 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
+use D6N\RuleEngine\Exception\FrozenFactException;
+use D6N\RuleEngine\Exception\InvalidNameException;
+use D6N\RuleEngine\Exception\NotCallableException;
+use D6N\RuleEngine\Exception\UndefinedFactException;
+
 /**
  * Ruler Context.
  *
@@ -140,11 +145,11 @@ class Context implements \ArrayAccess
     public function offsetSet(mixed $name, mixed $value): void
     {
         if (!\is_string($name) && !\is_int($name)) {
-            throw new \InvalidArgumentException('Fact names must be strings or integers.');
+            throw new InvalidNameException('Fact names must be strings or integers.');
         }
 
         if (isset($this->frozen[$name])) {
-            throw new \RuntimeException(\sprintf('Cannot override frozen fact "%s".', $name));
+            throw new FrozenFactException(\sprintf('Cannot override frozen fact "%s".', $name));
         }
 
         $this->keys[$name] = true;
@@ -185,7 +190,7 @@ class Context implements \ArrayAccess
     public function share(mixed $callable): object
     {
         if (!$this->isCallable($callable)) {
-            throw new \InvalidArgumentException('Value is not a Closure or invokable object.');
+            throw new NotCallableException('Value is not a Closure or invokable object.');
         }
 
         $this->shared->offsetSet($callable);
@@ -207,7 +212,7 @@ class Context implements \ArrayAccess
     public function protect(mixed $callable): object
     {
         if (!$this->isCallable($callable)) {
-            throw new \InvalidArgumentException('Callable is not a Closure or invokable object.');
+            throw new NotCallableException('Callable is not a Closure or invokable object.');
         }
 
         $this->protected->offsetSet($callable);
@@ -259,7 +264,7 @@ class Context implements \ArrayAccess
     private function definedName(mixed $name): string|int
     {
         if (!$this->offsetExists($name)) {
-            throw new \InvalidArgumentException(\sprintf('Fact "%s" is not defined.', \is_scalar($name) ? $name : \get_debug_type($name)));
+            throw new UndefinedFactException(\sprintf('Fact "%s" is not defined.', \is_scalar($name) ? $name : \get_debug_type($name)));
         }
 
         return $name;

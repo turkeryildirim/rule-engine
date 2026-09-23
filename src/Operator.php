@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
+use D6N\RuleEngine\Exception\OperandCountException;
 use D6N\RuleEngine\Operator\Cardinality;
 
 /**
@@ -45,7 +46,7 @@ abstract class Operator
         $cardinality = $this->getOperandCardinality();
 
         if (!$cardinality->isSatisfiedBy(\count($this->operands))) {
-            throw new \LogicException(\sprintf('%s takes %s, %d given', static::class, $cardinality->describe(), \count($this->operands)));
+            throw new OperandCountException(\sprintf('%s takes %s, %d given', static::class, $cardinality->describe(), \count($this->operands)));
         }
 
         return $this->operands;
@@ -68,7 +69,7 @@ abstract class Operator
         $cardinality = $this->getOperandCardinality();
 
         if (!$cardinality->acceptsAnother(\count($this->operands))) {
-            throw new \LogicException(\sprintf('%s takes %s', static::class, $cardinality->describe()));
+            throw new OperandCountException(\sprintf('%s takes %s', static::class, $cardinality->describe()));
         }
 
         $this->operands[] = $operand;

@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine;
 
+use D6N\RuleEngine\Exception\InvalidNameException;
+use D6N\RuleEngine\Exception\UnknownOperatorException;
 use D6N\RuleEngine\Operator\LogicalAnd;
 use D6N\RuleEngine\Operator\LogicalNot;
 use D6N\RuleEngine\Operator\LogicalOr;
@@ -165,7 +167,7 @@ class RuleBuilder implements \ArrayAccess
             }
         }
 
-        throw new \LogicException(\sprintf('Unknown operator: "%s"', $name));
+        throw new UnknownOperatorException(\sprintf('Unknown operator: "%s"', $name));
     }
 
     /**
@@ -174,7 +176,7 @@ class RuleBuilder implements \ArrayAccess
     private static function name(mixed $name): string
     {
         if (!\is_string($name)) {
-            throw new \InvalidArgumentException(\sprintf('%s names must be strings, %s given.', 'Variable', \get_debug_type($name)));
+            throw new InvalidNameException(\sprintf('%s names must be strings, %s given.', 'Variable', \get_debug_type($name)));
         }
 
         return $name;

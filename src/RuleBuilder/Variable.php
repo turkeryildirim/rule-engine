@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace D6N\RuleEngine\RuleBuilder;
 
+use D6N\RuleEngine\Exception\InvalidNameException;
 use D6N\RuleEngine\Operator\Addition;
 use D6N\RuleEngine\Operator\Ceil;
 use D6N\RuleEngine\Operator\Complement;
@@ -474,7 +475,7 @@ class Variable extends BaseVariable implements \ArrayAccess
     private static function name(mixed $name): string
     {
         if (!\is_string($name)) {
-            throw new \InvalidArgumentException(\sprintf('%s names must be strings, %s given.', 'VariableProperty', \get_debug_type($name)));
+            throw new InvalidNameException(\sprintf('%s names must be strings, %s given.', 'VariableProperty', \get_debug_type($name)));
         }
 
         return $name;
