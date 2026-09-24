@@ -1,6 +1,7 @@
 # Rule Engine
 
 [![Tests](https://github.com/turkeryildirim/rule-engine/actions/workflows/php.yml/badge.svg?branch=main)](https://github.com/turkeryildirim/rule-engine/actions/workflows/php.yml)
+[![Latest Version](https://img.shields.io/packagist/v/turkeryildirim/rule-engine.svg)](https://packagist.org/packages/turkeryildirim/rule-engine)
 
 A small, stateless production rules engine for PHP 8.5+.
 
@@ -415,6 +416,10 @@ composer cs-fix     # apply the coding standard
 ```
 
 `composer coverage` writes `build/coverage.json` (via [phpunit-json-coverage-report](https://github.com/turkeryildirim/phpunit-json-coverage-report)) and needs Xdebug; PCOV does not support the path coverage it collects.
+
+## Releases
+
+The package follows [semantic versioning](https://semver.org/). The current version is in `D6N\RuleEngine\RuleEngine::VERSION`. When a commit on `main` passes CI with a version that has no tag yet, CI tags it as `vX.Y.Z` and publishes a GitHub release; Packagist picks up the tag from there.
 
 ## Credits and license
 

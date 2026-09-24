@@ -85,6 +85,10 @@ All implement `Exception\RuleEngineException` and extend the SPL class that was 
 
 `Context` is a Pimple-style container. Closures and invokable objects are invoked lazily with the Context on every read. `share()` resolves once and then freezes the fact. `protect()` stores a callable as a literal value. Fact names must be strings or ints.
 
+## Releasing
+
+The package version lives in `RuleEngine::VERSION` (`src/RuleEngine.php`), not in composer.json; it is unrelated to `RuleSerializer::VERSION`, the JSON format version. To release, bump it and push to `main`: the `release` job in `.github/workflows/php.yml` runs after `build` passes, tags `vX.Y.Z` and creates a GitHub release with a zip, and skips if the tag already exists. Packagist updates from the tag. `.gitattributes` keeps dev files out of the dist archive.
+
 ## Tests
 
 Tests live in `tests/` under `D6N\RuleEngine\Test\`, mirror `src/`, and must end in `Test.php`. `tests/Functional/` has end-to-end DSL examples. Test doubles live in `tests/Fixtures/`. Use `CallCounter` rather than by-reference closure variables, which PHPStan can't track. Behavior changes and bug fixes need tests.
