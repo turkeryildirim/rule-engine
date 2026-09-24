@@ -48,3 +48,47 @@ jobs:
 
     - name: Run test suite with coverage (100% lines required)
       run: composer coverage
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - name: Read version
+      id: versioning
+      run: |
+        VERSION=$(grep "public const string VERSION" src/RuleEngine.php | cut -d"'" -f2)
+        if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "Could not read a semantic version from src/RuleEngine.php" >&2
+          exit 1
+        fi
+        echo "Version: $VERSION"
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+    - name: Create ZIP artifact
+      run: |
+        ZIP_NAME="rule-engine-${{ steps.versioning.outputs.version }}.zip"
+        zip -r "$ZIP_NAME" . -x "*.git*" "vendor/*" "tests/*" "build/*" "bin/*" ".idea/*" ".github/*" \
+          "composer.lock" "phpunit.xml.dist" "phpstan.neon.dist" ".php-cs-fixer.dist.php" "*.cache" "*.cache/*" "CLAUDE.md"
+        echo "ZIP_NAME=$ZIP_NAME" >> "$GITHUB_ENV"
+
+    - name: Create tag and release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG="v${{ steps.versioning.outputs.version }}"
+        if git rev-parse "$TAG" >/dev/null 2>&1; then
+          echo "Tag $TAG already exists. Skipping release creation."
+        else
+          git tag "$TAG"
+          git push origin "$TAG"
+          gh release create "$TAG" "$ZIP_NAME" --title "Release $TAG" --generate-notes
+        fi
