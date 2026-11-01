@@ -4,6 +4,9 @@ includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
 
 parameters:
+    phpVersion:
+        min: 80300
+        max: 80599
     level: max
     checkMissingOverrideMethodAttribute: true
     paths:

@@ -19,7 +19,7 @@ class Union extends VariableOperator implements VariableOperand
     {
         $values = \array_map(static fn (VariableOperand $operand): Value => $operand->prepareValue($context), $this->getOperands());
 
-        return new Set([])->union(...$values);
+        return (new Set([]))->union(...$values);
     }
 
     #[\Override]

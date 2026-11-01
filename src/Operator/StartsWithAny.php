@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace D6N\RuleEngine\Operator;
 
 use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Internal\Arrays;
 use D6N\RuleEngine\Internal\Coerce;
 use D6N\RuleEngine\Proposition;
 use D6N\RuleEngine\Value;
@@ -20,7 +21,7 @@ class StartsWithAny extends VariableOperator implements Proposition
         [$subject, $candidates] = $this->getOperands();
         $subject = $subject->prepareValue($context);
 
-        return \array_any(
+        return Arrays::any(
             Coerce::list($candidates->prepareValue($context)->getValue()),
             static fn (mixed $candidate): bool => $subject->startsWith(new Value($candidate)),
         );

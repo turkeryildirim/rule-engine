@@ -48,27 +48,27 @@ class ExceptionTest extends TestCase
     public static function failures(): iterable
     {
         yield 'non-numeric arithmetic' => [
-            static fn (): int|float => new Value('a')->add(new Value(1)),
+            static fn (): int|float => (new Value('a'))->add(new Value(1)),
             ArithmeticException::class,
             \RuntimeException::class,
         ];
         yield 'division by zero' => [
-            static fn (): int|float => new Value(1)->divide(new Value(0)),
+            static fn (): int|float => (new Value(1))->divide(new Value(0)),
             DivisionByZeroException::class,
             \RuntimeException::class,
         ];
         yield 'non-numeric set minimum' => [
-            static fn (): mixed => new Set(['a'])->min(),
+            static fn (): mixed => (new Set(['a']))->min(),
             ArithmeticException::class,
             \RuntimeException::class,
         ];
         yield 'string operation on array' => [
-            static fn (): bool => new Value([])->stringContains(new Value('a')),
+            static fn (): bool => (new Value([]))->stringContains(new Value('a')),
             InvalidOperandException::class,
             \RuntimeException::class,
         ];
         yield 'undefined fact' => [
-            static fn (): mixed => new Context()->offsetGet('missing'),
+            static fn (): mixed => (new Context())->offsetGet('missing'),
             UndefinedFactException::class,
             \InvalidArgumentException::class,
         ];
@@ -83,27 +83,27 @@ class ExceptionTest extends TestCase
             \RuntimeException::class,
         ];
         yield 'invalid fact name' => [
-            static fn () => new Context()->offsetSet(1.5, 'value'),
+            static fn () => (new Context())->offsetSet(1.5, 'value'),
             InvalidNameException::class,
             \InvalidArgumentException::class,
         ];
         yield 'invalid variable name' => [
-            static fn (): mixed => new RuleBuilder()->offsetGet(1),
+            static fn (): mixed => (new RuleBuilder())->offsetGet(1),
             InvalidNameException::class,
             \InvalidArgumentException::class,
         ];
         yield 'invalid property name' => [
-            static fn (): mixed => new RuleBuilder()->offsetGet('a')->offsetGet(1),
+            static fn (): mixed => (new RuleBuilder())->offsetGet('a')->offsetGet(1),
             InvalidNameException::class,
             \InvalidArgumentException::class,
         ];
         yield 'sharing a non-callable' => [
-            static fn (): object => new Context()->share('strlen'),
+            static fn (): object => (new Context())->share('strlen'),
             NotCallableException::class,
             \InvalidArgumentException::class,
         ];
         yield 'protecting a non-callable' => [
-            static fn (): object => new Context()->protect(1),
+            static fn (): object => (new Context())->protect(1),
             NotCallableException::class,
             \InvalidArgumentException::class,
         ];
@@ -113,12 +113,12 @@ class ExceptionTest extends TestCase
             \LogicException::class,
         ];
         yield 'too few operands' => [
-            static fn (): array => new EqualTo(new Variable())->getOperands(),
+            static fn (): array => (new EqualTo(new Variable()))->getOperands(),
             OperandCountException::class,
             \LogicException::class,
         ];
         yield 'unknown operator' => [
-            static fn (): string => new RuleBuilder()->findOperator('noSuchOperator'),
+            static fn (): string => (new RuleBuilder())->findOperator('noSuchOperator'),
             UnknownOperatorException::class,
             \LogicException::class,
         ];

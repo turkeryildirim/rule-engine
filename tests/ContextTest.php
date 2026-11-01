@@ -310,6 +310,6 @@ class ContextTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Fact "stdClass" is not defined.');
 
-        new Context()->offsetGet(new \stdClass());
+        (new Context())->offsetGet(new \stdClass());
     }
 }

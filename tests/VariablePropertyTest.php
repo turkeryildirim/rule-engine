@@ -72,8 +72,8 @@ class VariablePropertyTest extends TestCase
         });
         $context = new Context();
 
-        self::assertSame('public', new VariableProperty($parent, 'visible')->prepareValue($context)->getValue());
-        self::assertSame('default', new VariableProperty($parent, 'hidden', 'default')->prepareValue($context)->getValue());
+        self::assertSame('public', (new VariableProperty($parent, 'visible'))->prepareValue($context)->getValue());
+        self::assertSame('default', (new VariableProperty($parent, 'hidden', 'default'))->prepareValue($context)->getValue());
     }
 
     public function testMagicPropertiesAreResolved(): void
@@ -90,7 +90,7 @@ class VariablePropertyTest extends TestCase
             }
         });
 
-        self::assertSame('via __get', new VariableProperty($parent, 'magic')->prepareValue(new Context())->getValue());
+        self::assertSame('via __get', (new VariableProperty($parent, 'magic'))->prepareValue(new Context())->getValue());
     }
 
     public function testMagicCallDoesNotShadowProperties(): void
@@ -107,14 +107,14 @@ class VariablePropertyTest extends TestCase
             }
         });
 
-        self::assertSame('from property', new VariableProperty($parent, 'name')->prepareValue(new Context())->getValue());
+        self::assertSame('from property', (new VariableProperty($parent, 'name'))->prepareValue(new Context())->getValue());
     }
 
     public function testArrayAccessOffsetsAreResolved(): void
     {
         $parent = new Variable('object', new \ArrayObject(['key' => 'from offset']));
 
-        self::assertSame('from offset', new VariableProperty($parent, 'key')->prepareValue(new Context())->getValue());
+        self::assertSame('from offset', (new VariableProperty($parent, 'key'))->prepareValue(new Context())->getValue());
     }
 
     public function testValuesAreReturnedAsTheyAre(): void
@@ -122,6 +122,6 @@ class VariablePropertyTest extends TestCase
         $value = new \D6N\RuleEngine\Value(5);
         $parent = new Variable('object', ['key' => $value]);
 
-        self::assertSame($value, new VariableProperty($parent, 'key')->prepareValue(new Context()));
+        self::assertSame($value, (new VariableProperty($parent, 'key'))->prepareValue(new Context()));
     }
 }

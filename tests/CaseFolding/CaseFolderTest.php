@@ -87,7 +87,7 @@ class CaseFolderTest extends TestCase
     #[DataProvider('languageCodes')]
     public function testFactoryAcceptsLanguageCodesWithRegions(string $code): void
     {
-        self::assertInstanceOf(TurkishCaseFolder::class, new CaseFolderFactory()->create($code));
+        self::assertInstanceOf(TurkishCaseFolder::class, (new CaseFolderFactory())->create($code));
     }
 
     /**
@@ -107,7 +107,7 @@ class CaseFolderTest extends TestCase
         $this->expectException(UnsupportedLanguageException::class);
         $this->expectExceptionMessage('No case folding rules for language "xx"; supported: tr, az, crh, gag, el, es, fr, en, de, it, nl, pt.');
 
-        new CaseFolderFactory()->create('xx');
+        (new CaseFolderFactory())->create('xx');
     }
 
     public function testNewLanguagesCanBeRegistered(): void
@@ -123,7 +123,7 @@ class CaseFolderTest extends TestCase
         $this->expectException(UnsupportedLanguageException::class);
         $this->expectExceptionMessage('Cannot register "el": stdClass is not a CaseFolder.');
 
-        new CaseFolderFactory()->register('el', \stdClass::class);
+        (new CaseFolderFactory())->register('el', \stdClass::class);
     }
 
     public function testContextChoosesTheRules(): void
@@ -136,9 +136,9 @@ class CaseFolderTest extends TestCase
             }
         };
 
-        self::assertInstanceOf(Utf8CaseFolder::class, new Context()->caseFolder());
-        self::assertInstanceOf(TurkishCaseFolder::class, new Context(language: 'tr')->caseFolder());
-        self::assertSame($custom, new Context(language: $custom)->caseFolder());
+        self::assertInstanceOf(Utf8CaseFolder::class, (new Context())->caseFolder());
+        self::assertInstanceOf(TurkishCaseFolder::class, (new Context(language: 'tr'))->caseFolder());
+        self::assertSame($custom, (new Context(language: $custom))->caseFolder());
     }
 
     public function testContextRejectsUnknownLanguages(): void
@@ -205,7 +205,7 @@ class CaseFolderTest extends TestCase
     #[DataProvider('mappedLanguages')]
     public function testLanguagesMapToTheirRules(string $language, string $expected): void
     {
-        self::assertInstanceOf($expected, new CaseFolderFactory()->create($language));
+        self::assertInstanceOf($expected, (new CaseFolderFactory())->create($language));
     }
 
     /**

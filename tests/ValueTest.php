@@ -81,8 +81,8 @@ class ValueTest extends TestCase
 
     public function testStringContainsTreatsNullAsContainingNothing(): void
     {
-        self::assertFalse(new Value(null)->stringContains(new Value('a')));
-        self::assertFalse(new Value('abc')->stringContainsInsensitive(new Value(null)));
+        self::assertFalse((new Value(null))->stringContains(new Value('a')));
+        self::assertFalse((new Value('abc'))->stringContainsInsensitive(new Value(null)));
     }
 
     public function testStringOperationsRejectNonStrings(): void
@@ -90,7 +90,7 @@ class ValueTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('String operations: values must be strings');
 
-        new Value(['a'])->stringContains(new Value('a'));
+        (new Value(['a']))->stringContains(new Value('a'));
     }
 
     #[DataProvider('zeroDivisors')]
@@ -99,7 +99,7 @@ class ValueTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Division by zero');
 
-        new Value(1)->divide(new Value($zero));
+        (new Value(1))->divide(new Value($zero));
     }
 
     #[DataProvider('zeroDivisors')]
@@ -108,7 +108,7 @@ class ValueTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Division by zero');
 
-        new Value(1)->modulo(new Value($zero));
+        (new Value(1))->modulo(new Value($zero));
     }
 
     /**
@@ -125,9 +125,9 @@ class ValueTest extends TestCase
 
     public function testModuloUsesFmodForFloats(): void
     {
-        self::assertSame(1.5, new Value(5.5)->modulo(new Value(2)));
-        self::assertSame(0.0, new Value(5)->modulo(new Value(0.5)));
-        self::assertSame(1, new Value(7)->modulo(new Value(3)));
+        self::assertSame(1.5, (new Value(5.5))->modulo(new Value(2)));
+        self::assertSame(0.0, (new Value(5))->modulo(new Value(0.5)));
+        self::assertSame(1, (new Value(7))->modulo(new Value(3)));
     }
 
     public function testZeroToANegativePowerThrows(): void
@@ -135,19 +135,19 @@ class ValueTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Division by zero');
 
-        new Value(0)->exponentiate(new Value(-1));
+        (new Value(0))->exponentiate(new Value(-1));
     }
 
     public function testArithmeticAcceptsNumericStrings(): void
     {
-        self::assertSame(2, new Value('1.5')->ceil());
-        self::assertSame(1, new Value('1.5')->floor());
-        self::assertSame(4.5, new Value('3')->add(new Value('1.5')));
+        self::assertSame(2, (new Value('1.5'))->ceil());
+        self::assertSame(1, (new Value('1.5'))->floor());
+        self::assertSame(4.5, (new Value('3'))->add(new Value('1.5')));
     }
 
     public function testCeilKeepsFloatsThatDoNotFitInAnInt(): void
     {
-        self::assertSame(1.0e30, new Value(1.0e30)->ceil());
+        self::assertSame(1.0e30, (new Value(1.0e30))->ceil());
     }
 
     public function testStringRepresentation(): void

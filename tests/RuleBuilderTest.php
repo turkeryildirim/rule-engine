@@ -166,6 +166,6 @@ class RuleBuilderTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new RuleBuilder()->offsetGet(1);
+        (new RuleBuilder())->offsetGet(1);
     }
 }

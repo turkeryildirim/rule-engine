@@ -68,6 +68,6 @@ class VariableTest extends TestCase
 
     public function testAnonymousVariableHasNoName(): void
     {
-        self::assertNull(new Variable(null, 5)->getName());
+        self::assertNull((new Variable(null, 5))->getName());
     }
 }

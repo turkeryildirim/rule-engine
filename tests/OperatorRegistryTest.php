@@ -51,7 +51,7 @@ class OperatorRegistryTest extends TestCase
         $this->expectException(UnknownOperatorException::class);
         $this->expectExceptionMessage('Cannot register "nope": stdClass is not a Proposition or VariableOperand.');
 
-        new OperatorRegistry()->register('nope', \stdClass::class);
+        (new OperatorRegistry())->register('nope', \stdClass::class);
     }
 
     public function testUnknownNamesAreRejected(): void
@@ -59,7 +59,7 @@ class OperatorRegistryTest extends TestCase
         $this->expectException(UnknownOperatorException::class);
         $this->expectExceptionMessage('Unknown operator: "noSuchOperator"');
 
-        new OperatorRegistry()->resolve('noSuchOperator');
+        (new OperatorRegistry())->resolve('noSuchOperator');
     }
 
     public function testUnregisteredOperatorsHaveNoName(): void
@@ -67,7 +67,7 @@ class OperatorRegistryTest extends TestCase
         $this->expectException(UnknownOperatorException::class);
         $this->expectExceptionMessage('Operator '.TrueProposition::class.' is not registered');
 
-        new OperatorRegistry()->nameOf(new TrueProposition());
+        (new OperatorRegistry())->nameOf(new TrueProposition());
     }
 
     public function testAShortNameThatResolvesToAnotherClassIsNotUsed(): void
@@ -93,7 +93,7 @@ class OperatorRegistryTest extends TestCase
 
     public function testEveryFluentBuiltInIsDocumentedOnTheVariable(): void
     {
-        $doc = (string) new \ReflectionClass(Variable::class)->getDocComment();
+        $doc = (string) (new \ReflectionClass(Variable::class))->getDocComment();
         \preg_match_all('/@method\s+\S+\s+(\w+)\(/', $doc, $matches);
 
         $fluent = \array_keys(\array_filter(

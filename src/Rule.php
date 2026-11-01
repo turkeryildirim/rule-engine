@@ -72,7 +72,7 @@ class Rule implements Proposition
      */
     public function explain(Context $context, ?OperatorRegistry $operators = null): Explanation
     {
-        return new Explainer($operators)->explain($this, $context);
+        return (new Explainer($operators))->explain($this, $context);
     }
 
     /**

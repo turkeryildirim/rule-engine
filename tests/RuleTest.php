@@ -24,7 +24,7 @@ class RuleTest extends TestCase
             return true;
         });
 
-        new Rule($condition)->evaluate($context);
+        (new Rule($condition))->evaluate($context);
 
         self::assertSame([[$context]], $spy->arguments);
     }
@@ -69,7 +69,7 @@ class RuleTest extends TestCase
 
     public function testExecuteReportsWhetherTheConditionHeld(): void
     {
-        self::assertTrue(new Rule(new TrueProposition())->execute(new Context()));
-        self::assertFalse(new Rule(new FalseProposition(), new CallCounter())->execute(new Context()));
+        self::assertTrue((new Rule(new TrueProposition()))->execute(new Context()));
+        self::assertFalse((new Rule(new FalseProposition(), new CallCounter()))->execute(new Context()));
     }
 }

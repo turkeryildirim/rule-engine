@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace D6N\RuleEngine\Operator;
 
 use D6N\RuleEngine\Context;
+use D6N\RuleEngine\Internal\Arrays;
 use D6N\RuleEngine\Proposition;
 
 /**
@@ -18,7 +19,7 @@ class LogicalOr extends LogicalOperator
     #[\Override]
     public function evaluate(Context $context): bool
     {
-        return \array_any($this->getOperands(), static fn (Proposition $operand): bool => $operand->evaluate($context));
+        return Arrays::any($this->getOperands(), static fn (Proposition $operand): bool => $operand->evaluate($context));
     }
 
     #[\Override]

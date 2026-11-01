@@ -175,7 +175,7 @@ class ValueOperatorsTest extends TestCase
     public function testContextUsesTheSystemClockByDefault(): void
     {
         $before = new \DateTimeImmutable();
-        $now = new Context()->now();
+        $now = (new Context())->now();
 
         self::assertGreaterThanOrEqual($before, $now);
         self::assertLessThanOrEqual(new \DateTimeImmutable(), $now);
@@ -192,7 +192,7 @@ class ValueOperatorsTest extends TestCase
             $this->expectException(InvalidOperandException::class);
             $this->expectExceptionMessage('Regular expression failed: Backtrack limit exhausted');
 
-            new RuleBuilder()['v']->matches('/(?:\D+|<\d+>)*[!?]/')->evaluate(new Context(['v' => 'foobar foobar foobar']));
+            (new RuleBuilder())['v']->matches('/(?:\D+|<\d+>)*[!?]/')->evaluate(new Context(['v' => 'foobar foobar foobar']));
         } finally {
             \ini_set('pcre.backtrack_limit', (string) $limit);
             \ini_set('pcre.jit', (string) $jit);

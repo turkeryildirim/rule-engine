@@ -15,6 +15,8 @@ jobs:
     strategy:
       matrix:
         php-version:
+        - '8.3'
+        - '8.4'
         - '8.5'
 
     steps:
@@ -24,7 +26,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-version }}
-        coverage: xdebug
+        coverage: ${{ matrix.php-version == '8.5' && 'xdebug' || 'none' }}
 
     - name: Validate composer.json
       run: composer validate --strict
@@ -41,12 +43,19 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Check code style
+      if: matrix.php-version == '8.5'
       run: composer cs
 
     - name: Static analysis
+      if: matrix.php-version == '8.5'
       run: composer stan
 
+    - name: Run test suite
+      if: matrix.php-version != '8.5'
+      run: composer test
+
     - name: Run test suite with coverage (100% lines required)
+      if: matrix.php-version == '8.5'
       run: composer coverage
 
   release:
