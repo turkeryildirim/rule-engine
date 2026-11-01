@@ -148,7 +148,7 @@ class ExplanationTest extends TestCase
         });
 
         try {
-            new Rule($flaky, name: 'flaky')->evaluate(new Context());
+            (new Rule($flaky, name: 'flaky'))->evaluate(new Context());
             self::fail('Expected an exception.');
         } catch (EvaluationException $e) {
             self::assertSame('Rule "flaky" failed: first call only', $e->getMessage());
@@ -158,7 +158,7 @@ class ExplanationTest extends TestCase
 
     public function testIncompleteOperatorsAreReportedWithoutOperands(): void
     {
-        $explanation = new Explainer()->explain(new EqualTo(new Variable(null, 1)), new Context());
+        $explanation = (new Explainer())->explain(new EqualTo(new Variable(null, 1)), new Context());
 
         self::assertTrue($explanation->failed());
         self::assertSame([], $explanation->children);

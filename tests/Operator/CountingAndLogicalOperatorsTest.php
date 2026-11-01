@@ -75,7 +75,7 @@ class CountingAndLogicalOperatorsTest extends TestCase
     {
         $this->expectException(OperandCountException::class);
 
-        new RuleBuilder()->logicalImplies(self::prop(true), self::prop(true))->addProposition(self::prop(true));
+        (new RuleBuilder())->logicalImplies(self::prop(true), self::prop(true))->addProposition(self::prop(true));
     }
 
     private static function prop(bool $value): Proposition

@@ -18,6 +18,7 @@ return (new PhpCsFixer\Config())
         'native_function_invocation'             => ['include' => ['@all'], 'scope' => 'all', 'strict' => true],
         'ordered_imports'                        => ['imports_order' => ['class', 'function', 'const'], 'sort_algorithm' => 'alpha'],
         'strict_param'                           => true,
+        'new_expression_parentheses'             => ['use_parentheses' => true],
         'no_superfluous_phpdoc_tags'             => false,
         'pow_to_exponentiation'                  => false,
         'increment_style'                        => false,

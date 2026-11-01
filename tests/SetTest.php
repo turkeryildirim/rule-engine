@@ -68,7 +68,7 @@ class SetTest extends TestCase
         self::assertCount(7, $set);
         self::assertTrue($set->setContains(new Value('1')));
         self::assertFalse($set->setContains(new Value(2)));
-        self::assertFalse(new Set([1, 2])->containsSubset(new Set(['1'])));
+        self::assertFalse((new Set([1, 2]))->containsSubset(new Set(['1'])));
     }
 
     public function testNestedSetsAreComparedByContent(): void
@@ -94,7 +94,7 @@ class SetTest extends TestCase
 
     public function testKeysAreDiscarded(): void
     {
-        self::assertSame(['a', 'b'], new Set(['x' => 'a', 'y' => 'b'])->getValue());
+        self::assertSame(['a', 'b'], (new Set(['x' => 'a', 'y' => 'b']))->getValue());
     }
 
     public function testStringRepresentationIgnoresOrderAndDuplicates(): void
@@ -105,8 +105,8 @@ class SetTest extends TestCase
 
     public function testMinAndMaxOfAnEmptySetAreNull(): void
     {
-        self::assertNull(new Set([])->min());
-        self::assertNull(new Set(null)->max());
+        self::assertNull((new Set([]))->min());
+        self::assertNull((new Set(null))->max());
     }
 
     public function testSetsAndValuesCanBeMembers(): void

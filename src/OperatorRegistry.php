@@ -170,7 +170,7 @@ final class OperatorRegistry
             return $name;
         }
 
-        $short = \lcfirst(new \ReflectionClass($operator)->getShortName());
+        $short = \lcfirst((new \ReflectionClass($operator))->getShortName());
         if ($this->resolves($short, $operator::class)) {
             return $short;
         }

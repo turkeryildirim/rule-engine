@@ -2,14 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-`turkeryildirim/rule-engine` (https://github.com/turkeryildirim/rule-engine) is a stateless production rules engine library for PHP 8.5+ (requires `ext-mbstring` and `symfony/polyfill-intl-normalizer`). The namespace is `D6N\RuleEngine\` (tests: `D6N\RuleEngine\Test\`). There is no application to run; the test suite is the main way to exercise the code.
+`turkeryildirim/rule-engine` (https://github.com/turkeryildirim/rule-engine) is a stateless production rules engine library for PHP 8.3+ (requires `ext-mbstring` and `symfony/polyfill-intl-normalizer`). The namespace is `D6N\RuleEngine\` (tests: `D6N\RuleEngine\Test\`). There is no application to run; the test suite is the main way to exercise the code.
 
 ## Commands
 
 ```bash
 composer install --prefer-source                   # vendor/ and composer.lock are not committed
 composer check                                     # everything CI runs: cs, stan, coverage
-composer test                                      # PHPUnit 13, random order, no coverage (fast)
+composer test                                      # PHPUnit 12 or 13, random order, no coverage (fast)
 composer coverage                                  # tests + build/coverage.json; fails below 100% lines
 vendor/bin/phpunit tests/Operator/AdditionTest.php # one test file
 vendor/bin/phpunit --filter testAddition           # one test method / pattern
@@ -22,6 +22,8 @@ On this machine `api.github.com` is unreachable, so plain `composer install/upda
 `phpunit.xml.dist` runs in random order and fails on any PHP deprecation, notice, warning or risky test. Test metadata uses attributes (`#[DataProvider]`, `#[Test]`), and data providers must be `public static`.
 
 Coverage: the `turkeryildirim/phpunit-json-coverage-report` extension writes `build/coverage.json` whenever coverage is active. `bin/check-coverage.php` fails unless **line coverage is 100%** and lists the uncovered lines; branch coverage is also 100% (keep it there) and path coverage is reported only. Xdebug attributes calls made through first-class callables (`self::foo(...)`) to the wrong function, so use closures where branch coverage matters, and avoid `match` on enums whose "no arm matched" branch can never run (see `Cardinality`). Don't use `@codeCoverageIgnore`: delete unreachable code instead. `assert()` lines never count as executed, so don't use `assert()` in `src/`. Path coverage needs `memory_limit=2G`, which `composer coverage` sets.
+
+The code must parse and run on PHP 8.3 (CI tests 8.3, 8.4 and 8.5; cs, stan and coverage run on 8.5 only): no 8.4+ syntax or functions, i.e. no `new X()->m()` without parentheses (the `new_expression_parentheses` rule enforces `(new X())->m()`), no property hooks or asymmetric visibility, no `array_any()`/`array_all()`/`array_find()` (use `Internal\Arrays`). PHPStan's `phpVersion` range (8.3 to 8.5) catches neither: running on 8.5 it accepted both the syntax and `array_any()`/`array_all()`, so the CI run on 8.3 is the only guard. PHP 8.3 resolves PHPUnit 12, so tests must stay compatible with both 12.5 and 13.
 
 Every file has `declare(strict_types=1)`. Style (`.php-cs-fixer.dist.php`): Symfony preset, aligned `=>`, **fully qualified native function calls** (`\count()`, `\is_numeric(...)`), `self::assert*` in tests. Methods that override or implement a parent/interface method carry `#[\Override]` (enforced by PHPStan's `checkMissingOverrideMethodAttribute`).
 
@@ -92,3 +94,22 @@ The package version lives in `RuleEngine::VERSION` (`src/RuleEngine.php`), not i
 ## Tests
 
 Tests live in `tests/` under `D6N\RuleEngine\Test\`, mirror `src/`, and must end in `Test.php`. `tests/Functional/` has end-to-end DSL examples. Test doubles live in `tests/Fixtures/`. Use `CallCounter` rather than by-reference closure variables, which PHPStan can't track. Behavior changes and bug fixes need tests.
+
+## Delegating work to subagents
+
+Keep the main conversation for planning, decisions, and talking with me. Hand the following work to the matching subagent instead of doing it in the main context:
+
+| Work | Subagent | Model |
+|---|---|---|
+| Searching the codebase, reading many files, "where is X defined/used", running system or diagnostic commands and reporting their output, web research across several pages (documentation, changelogs, issue threads) | `explorer` | Haiku |
+| Running tests, linters, type checks, builds and summarizing failures | `test-runner` | Haiku |
+| Writing code once the approach is decided, refactoring, multi-file mechanical changes | `implementer` | Sonnet |
+| Reviewing a diff or changed files before calling work done | `reviewer` | Sonnet |
+| Architecture/design decisions, planning non-trivial features, debugging with no obvious cause | `architect` | Opus |
+
+Guidelines:
+- Do small things directly: a single known file to read, a one-line edit, one quick command. Delegation has overhead; use it when the work would pull a lot of output into the main context or is clearly one of the roles above.
+- When delegating, give the subagent everything it needs: the goal, relevant file paths, what has been ruled out, and what to return. It does not see this conversation.
+- Run independent subagent tasks in parallel.
+- Treat subagent results as reports to check, not final truth; verify anything surprising before acting on it.
+

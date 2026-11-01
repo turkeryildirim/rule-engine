@@ -3,7 +3,7 @@
 [![Tests](https://github.com/turkeryildirim/rule-engine/actions/workflows/php.yml/badge.svg?branch=main)](https://github.com/turkeryildirim/rule-engine/actions/workflows/php.yml)
 [![Latest Version](https://img.shields.io/packagist/v/turkeryildirim/rule-engine.svg)](https://packagist.org/packages/turkeryildirim/rule-engine)
 
-A small, stateless production rules engine for PHP 8.5+.
+A small, stateless production rules engine for PHP 8.3+.
 
 You describe conditions with a fluent DSL, feed them facts through a `Context`, and either ask whether a rule holds or let it run an action. Rules can be stored as JSON, run in sets with different match strategies, and explained node by node when you need to know why they did (or didn't) match.
 
@@ -40,7 +40,7 @@ $freeShipping->execute($context);  // prints "Free shipping for order 1042"
 composer require turkeryildirim/rule-engine
 ```
 
-Requires PHP 8.5+ with `ext-mbstring`. The only package dependency is `symfony/polyfill-intl-normalizer`, which uses `ext-intl` when it is installed (faster) and pure PHP otherwise. Classes live in the `D6N\RuleEngine\` namespace.
+Requires PHP 8.3+ with `ext-mbstring`. The only package dependency is `symfony/polyfill-intl-normalizer`, which uses `ext-intl` when it is installed (faster) and pure PHP otherwise. Classes live in the `D6N\RuleEngine\` namespace.
 
 ## Core concepts
 
@@ -409,7 +409,7 @@ $rb->create($rb['a']->aLotGreaterThan(10));
 ```bash
 composer install
 composer check      # everything CI runs: code style, static analysis, tests with coverage
-composer test       # PHPUnit 13, random order, fails on any deprecation
+composer test       # PHPUnit 12 or 13, random order, fails on any deprecation
 composer coverage   # tests with coverage; fails below 100% line coverage
 composer stan       # PHPStan at max level with strict rules
 composer cs-fix     # apply the coding standard

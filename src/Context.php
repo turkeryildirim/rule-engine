@@ -63,7 +63,7 @@ class Context implements \ArrayAccess
         $this->clock = $clock ?? new SystemClock();
         $this->caseFolder = match (true) {
             $language instanceof CaseFolder => $language,
-            \is_string($language)           => new CaseFolderFactory()->create($language),
+            \is_string($language)           => (new CaseFolderFactory())->create($language),
             default                         => new Utf8CaseFolder(),
         };
         $this->shared = new \SplObjectStorage();

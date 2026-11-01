@@ -71,7 +71,7 @@ class RuleSerializerTest extends TestCase
                     }
                 }
             }
-            JSON, new RuleSerializer()->toJson($rule));
+            JSON, (new RuleSerializer())->toJson($rule));
     }
 
     public function testRuleSetsSurviveARoundTrip(): void
@@ -150,7 +150,7 @@ class RuleSerializerTest extends TestCase
         $this->expectException(SerializationException::class);
         $this->expectExceptionMessage($message);
 
-        new RuleSerializer()->toJson($build(new RuleBuilder()));
+        (new RuleSerializer())->toJson($build(new RuleBuilder()));
     }
 
     /**
@@ -182,7 +182,7 @@ class RuleSerializerTest extends TestCase
         $this->expectException(SerializationException::class);
         $this->expectExceptionMessage($message);
 
-        new RuleSerializer()->ruleSetFromJson($json);
+        (new RuleSerializer())->ruleSetFromJson($json);
     }
 
     /**
@@ -221,17 +221,17 @@ class RuleSerializerTest extends TestCase
         $this->expectException(SerializationException::class);
         $this->expectExceptionMessage('Missing "rule"');
 
-        new RuleSerializer()->ruleFromJson('{"version": 1}');
+        (new RuleSerializer())->ruleFromJson('{"version": 1}');
     }
 
     public function testExceptionExposesThePath(): void
     {
         try {
-            new RuleSerializer()->ruleFromJson('{"version": 1, "rule": {"condition": {"op": "nope"}}}');
+            (new RuleSerializer())->ruleFromJson('{"version": 1, "rule": {"condition": {"op": "nope"}}}');
             self::fail('Expected an exception.');
         } catch (SerializationException $e) {
             self::assertSame('rule.condition.op', $e->getPath());
-            self::assertSame('', new SerializationException('x')->getPath());
+            self::assertSame('', (new SerializationException('x'))->getPath());
         }
     }
 
@@ -251,7 +251,7 @@ class RuleSerializerTest extends TestCase
     {
         $rb = new RuleBuilder();
 
-        $json = new RuleSerializer()->toJson($rb->create($rb['name']->equalTo("caf\xE9")), pretty: false);
+        $json = (new RuleSerializer())->toJson($rb->create($rb['name']->equalTo("caf\xE9")), pretty: false);
 
         self::assertStringContainsString("caf\u{FFFD}", $json);
     }
@@ -276,7 +276,7 @@ class RuleSerializerTest extends TestCase
     {
         foreach (['{"version": 1, "rule": 1}', '{"version": 1, "rule": {"condition": {"op": "logicalNot", "operands": [{"rule": 1}]}}}'] as $json) {
             try {
-                new RuleSerializer()->ruleFromJson($json);
+                (new RuleSerializer())->ruleFromJson($json);
                 self::fail('Expected an exception for '.$json);
             } catch (SerializationException $e) {
                 self::assertStringStartsWith('A rule must be an object', $e->getMessage());

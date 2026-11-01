@@ -46,6 +46,6 @@ class OperatorTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('LogicalAnd takes at least 1 operand, 0 given');
 
-        new LogicalAnd()->getOperands();
+        (new LogicalAnd())->getOperands();
     }
 }
